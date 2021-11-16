@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<title>Home - ShibaNet</title>
+<h6>Sorting by New</h6>
+{% for post in posts %}
+<hr>
+<h4><a href={{ url_for("view_post", post_id=post["_id"]) }}>{{ post["title"] }}</a></h4>
+{{ post["body"] }}
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<title>Register - ShibaNet</title>
+<div class="centercontainer">
+	<div class="center">
+		<h3 style="text-align: center;">Register</h3>
+		{% if error %}
+		<div class="alert alert-danger" role="alert">
+			{{ error }}
+		</div>
+		{% endif %}
+		<form action="" method="POST" class="form-signin">
+			<div class="form-group">
+				<input type="username" class="form-control" name="username" placeholder="Username" required><br>
+				<input type="email" class="form-control" name="email" placeholder="Email" required><br>
+				<input type="password" class="form-control" name="password" placeholder="Password" required><br>
+				<input style="width: 100%" type="submit" class="btn btn-primary" value="Register" style="text-align: center;">
+			</div>
+		</form>
+		<a style="width: 100%" class="btn btn-secondary" role="button" href="{{url_for('login')}}" style="text-align: center;">Already have an account?</a>
+	</div>
+</div>
+{% endblock %}

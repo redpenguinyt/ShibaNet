@@ -1,0 +1,17 @@
+body {
+	background-color: rgb(48, 38, 102);
+	color: rgb(255, 255, 255);
+};
+.centercontainer {
+  height: 200px;
+  position: relative;
+  border: 3px solid green;
+}
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}

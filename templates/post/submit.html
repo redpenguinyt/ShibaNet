@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<title>Submit - ShibaNet</title>
+<h2>Create a post</h2><br>
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+<form action="{{ url_for('submit') }}" method="POST" class="form-signin">
+	<div class="form-group">
+		<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*"><br>
+		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000"></textarea><br>
+		<input type="submit" class="btn btn-primary" value="Post!" style="text-align: center;" onClick="OnSubmit(this);">
+	</div>
+</form>
+<script>
+	function OnSubmit(el) {
+		el.disabled=true;
+		el.value='Sending…';
+		el.form.submit();
+	}
+</script>
+{% endblock %}

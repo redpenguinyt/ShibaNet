@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ username }}</h2>
+
+{% for post in user_posts %}
+<hr>
+<h4><a href={{ url_for("view_post", post_id=post["_id"]) }}>{{ post["title"] }}</a></h4>
+{{ post["body"] }}
+{% endfor %}
+
+{% endblock %}
