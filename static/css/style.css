@@ -15,3 +15,14 @@ body {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
+.followButton {
+	text-align: right;
+	padding-right: 15px;
+}
+.btn {
+  border: none;
+  color: white;
+  padding: 6px 6px;
+  font-size: 16px;
+  cursor: pointer;
+}

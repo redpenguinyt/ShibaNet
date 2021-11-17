@@ -22,6 +22,8 @@ def login():
 		if bcrypt.hashpw(request.form["password"].encode("utf-8"), login_user["password"]) == login_user["password"]:
 			session["username"] = request.form["username"]
 			return redirect(url_for("index"))
+	elif mongo.db.tmp_users.find_one({"name": request.form["username"]}):
+		return render_template("auth/login.html", hidenav=True, error="Please confirm your email first")
 	
 	return render_template("auth/login.html", hidenav=True, error="Incorrect username or password")
 
@@ -42,7 +44,7 @@ def register():
 
 				confirm_key = generate_id(10)
 
-				new_user = {
+				new_tmp_user = {
 					"name": request.form["username"],
 					"email": request.form["email"],
 					"password": hashpass,
@@ -50,13 +52,13 @@ def register():
 				}
 
 				# Confirm email
-				confirmemail(new_user, confirm_key)
+				confirmemail(new_tmp_user, confirm_key)
 
 				tmp_users = mongo.db.tmp_users
 				tmp_users.delete_many({'email': request.form["email"]})
-				tmp_users.insert_one(new_user)
+				tmp_users.insert_one(new_tmp_user)
 
-				return render_template("message.html",title="Confirm email address",body="Check your email")
+				return render_template("message.html",title="Confirm email address", body=f"Check your email ({request.form['email']})")
 			else:
 				return render_template("auth/register.html", hidenav=True, error="Email is already in use")
 		else:
@@ -74,7 +76,9 @@ def confirm(email, key):
 				{
 					"name": tmp_user["name"],
 					"email": tmp_user["email"],
-					"password": tmp_user["password"]
+					"password": tmp_user["password"],
+					"following": ["ShibaNet_Official"],
+					"bio": ""
 				}
 			)
 			tmp_users.delete_one({'email': email})
@@ -82,3 +86,7 @@ def confirm(email, key):
 			return redirect(url_for("index"))
 	
 	return render_template("message.html", title="Couldn't confirm email", body="Try again")
+
+@app.route("/admin")
+def admin():
+	return redirect("https://replit.com/@shibanet/shibanet")

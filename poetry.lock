@@ -122,6 +122,18 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "flask-misaka"
+version = "1.0.0"
+description = "A pleasant interface between the Flask web framework and the Misaka Markdown parser."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Flask = ">=0.7"
+misaka = ">=2.0,<3.0"
+
+[[package]]
 name = "flask-pymongo"
 version = "2.3.0"
 description = "PyMongo support for Flask applications"
@@ -184,6 +196,17 @@ description = "Safely add untrusted strings to HTML/XML markup."
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "misaka"
+version = "2.1.1"
+description = "A CFFI binding for Hoedown, a markdown parsing library."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+cffi = ">=1.0.0"
 
 [[package]]
 name = "premailer"
@@ -303,7 +326,7 @@ srv = ["pymongo"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "9c6290d42c89568d420330de81ce0f9ec6e21e075519eb684e4c5a65dca1b5db"
+content-hash = "5fd76185e84662c7ff0592af6976617af92ab333271826e0946b85ad74f44462"
 
 [metadata.files]
 bcrypt = [
@@ -397,6 +420,11 @@ dnspython = [
 flask = [
     {file = "Flask-2.0.2-py3-none-any.whl", hash = "sha256:cb90f62f1d8e4dc4621f52106613488b5ba826b2e1e10a33eac92f723093ab6a"},
     {file = "Flask-2.0.2.tar.gz", hash = "sha256:7b2fb8e934ddd50731893bdcdb00fc8c0315916f9fcd50d22c7cc1a95ab634e2"},
+]
+flask-misaka = [
+    {file = "Flask-Misaka-1.0.0.tar.gz", hash = "sha256:f423c3beb5502742a57330a272f81d53223f6f99d45cc45b03926e3a3034f589"},
+    {file = "Flask_Misaka-1.0.0-py3-none-any.whl", hash = "sha256:d0cfb0efd9e5afacda76defd4a605a68390f4fb1bef283c71534fd3ce0d3efb5"},
+    {file = "Flask_Misaka-1.0.0-py3.7.egg", hash = "sha256:bcfdacc0803ccea75d377737e82c83489b2153d922c9d9f9eabc5148d216ed70"},
 ]
 flask-pymongo = [
     {file = "Flask-PyMongo-2.3.0.tar.gz", hash = "sha256:620eb02dc8808a5fcb90f26cab6cba9d6bf497b15032ae3ca99df80366e33314"},
@@ -546,6 +574,9 @@ markupsafe = [
     {file = "MarkupSafe-2.0.1-cp39-cp39-win32.whl", hash = "sha256:10f82115e21dc0dfec9ab5c0223652f7197feb168c940f3ef61563fc2d6beb74"},
     {file = "MarkupSafe-2.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:693ce3f9e70a6cf7d2fb9e6c9d8b204b6b39897a2c4a1aa65728d5ac97dcc1d8"},
     {file = "MarkupSafe-2.0.1.tar.gz", hash = "sha256:594c67807fb16238b30c44bdf74f36c02cdf22d1c8cda91ef8a0ed8dabf5620a"},
+]
+misaka = [
+    {file = "misaka-2.1.1.tar.gz", hash = "sha256:62f35254550095d899fc2ab8b33e156fc5e674176f074959cbca43cf7912ecd7"},
 ]
 premailer = [
     {file = "premailer-3.10.0-py2.py3-none-any.whl", hash = "sha256:021b8196364d7df96d04f9ade51b794d0b77bcc19e998321c515633a2273be1a"},

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<title>Settings - ShibaNet</title>
+<h2>User settings</h2><br>
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+
+<form action="{{ url_for('user_settings') }}" method="POST" class="form-signin">
+	<div class="form-group">
+		<textarea style="width: 75%" class="form-control" id="bio" name="bio" rows="2" placeholder="Bio*" maxlength="75">{{ user['bio'] }}</textarea>
+		<br>
+		<input type="submit" class="btn btn-primary" value="Save">
+	</div>
+</form>
+{% endblock %}
