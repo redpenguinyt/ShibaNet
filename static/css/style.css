@@ -1,11 +1,13 @@
-body {
-	background-color: rgb(48, 38, 102);
-	color: rgb(255, 255, 255);
-};
+.main {
+	padding-left: 15px; 
+	padding-top: 15px; 
+	padding-right: 15px;
+	padding-bottom: 15px;
+}
 .centercontainer {
-  height: 200px;
-  position: relative;
-  border: 3px solid green;
+padding:auto;
+margin:auto;
+text-align:centre;
 }
 .center {
   margin: 0;
@@ -20,9 +22,48 @@ body {
 	padding-right: 15px;
 }
 .btn {
-  border: none;
-  color: white;
-  padding: 6px 6px;
-  font-size: 16px;
-  cursor: pointer;
+	border: none;
+	padding: 6px 6px;
+	font-size: 16px;
+	cursor: pointer;
+};
+img.rounded {
+	object-fit: cover;
+	border-radius: 10px;
+}
+hr {
+	width: 60%;
+}
+.image_post * img {
+	max-width: 65%;
+}
+.timestamp {
+	font-size: 15px;
+	color: rgb(100, 100, 100);
+	text-align: right;
+}
+.no-highlight {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.theme_select {
+	background-color: rgb(100, 100, 100);
+	width: 80%
+}
+.amethyst_theme {
+	background-color: rgb(48, 38, 102);
+	color: white;
+}
+.dark_theme {
+	background-color: rgb(50, 50, 50);
+	color: white;
+}
+.light_theme {
+	background-color: white;
+	color: black;
+}
+.banana_theme {
+	background-color: yellow;
+	color: black;
 }

@@ -6,10 +6,49 @@
 <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endif %}
 
-<form action="{{ url_for('user_settings') }}" method="POST" class="form-signin">
+<form action="{{ url_for('user_settings') }}" method="POST" class="form-signin" enctype="multipart/form-data">
 	<div class="form-group">
+
+		<!-- Profile picture -->
+		<label>Profile picture: </label>
+		<img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://i.imgur.com/WxNkK7J.png'" alt="" class="rounded" width="30px" height="30px">
+		<input type="file" name="pfp" accept="image/*"/>
+		<br><br>
+
+		<!-- Bio -->
+		<label>Bio: </label>
 		<textarea style="width: 75%" class="form-control" id="bio" name="bio" rows="2" placeholder="Bio*" maxlength="75">{{ user['bio'] }}</textarea>
 		<br>
+
+		<!-- Theme setting -->
+		<div class="theme_select main"> 
+			<label>Themes:</label>
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="themes" id="amethyst" value="amethyst" {% if session["theme"] == "amethyst" %}checked{% endif %}>
+				<label class="form-check-label amethyst_theme main">
+					Amethyst Theme
+				</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="themes" id="dark" value="dark" {% if session["theme"] == "dark" %}checked{% endif %}>
+				<label class="form-check-label dark_theme main">
+					Dark Theme
+				</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="themes" id="light" value="light" {% if session["theme"] == "light" %}checked{% endif %}>
+				<label class="form-check-label light_theme main">
+					Light Theme
+				</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="themes" id="banana" value="banana" {% if session["theme"] == "banana" %}checked{% endif %}>
+				<label class="form-check-label banana_theme main">
+					Banana Theme
+				</label>
+			</div>
+			<br>
+		</div><br>
 		<input type="submit" class="btn btn-primary" value="Save">
 	</div>
 </form>

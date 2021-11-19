@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<title>Notification - ShibaNet</title>
+
+<h2>{{ notif["title"]|e|markdown }}</h2>
+
+<div class="text_post">
+	{{ notif["body"]|e|markdown }}
+</div>
+
+<br><br><p class="timestamp">Recieved on {{ timestamp }}</p>
+
+{% endblock %}

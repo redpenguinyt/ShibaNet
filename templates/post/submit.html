@@ -1,26 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
-<title>Submit - ShibaNet</title>
-<h2>Create a post</h2><br>
+<title>{% if edit_post %}Edit{% else %}Submit{% endif %} - ShibaNet</title>
+<h2>{% if edit_post %}Edit{% else %}Create{% endif %} a post</h2><br>
 {% if error %}
 <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endif %}
 
-<form action={% if not edit_post %}"{{ url_for('submit') }}"{% else %}"{{ url_for('edit_post',post_id=edit_post['_id']) }}"{% endif %} method="POST" class="form-signin">
-	{% if edit_post %}
+{% if edit_post %}
+<form action="{{ url_for('edit_post', post_id=edit_post['_id']) }}" method="POST" class="form-signin">
 	<div class="form-group">
 		<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*" value="{{ edit_post['title'] }}"><br>
 		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000">{{ edit_post['body'] }}</textarea><br>
 		<input type="submit" class="btn btn-primary" value="Edit" style="text-align: center;" onClick="OnSubmit(this);">
 	</div>
-	{% else %}
-	<div class="form-group">
-		<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*"><br>
-		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000"></textarea><br>
-		<input type="submit" class="btn btn-primary" value="Post!" style="text-align: center;" onClick="OnSubmit(this);">
-	</div>
-	{% endif %}
 </form>
+{% else %}
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+	<li class="nav-item" role="presentation">
+		<button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab" aria-controls="text" aria-selected="true">Text</button>
+	</li>
+  	<li class="nav-item" role="presentation">
+    	<button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button" role="tab" aria-controls="image" aria-selected="false">Image</button>
+  	</li>
+</ul>
+<div class="tab-content" id="myTabContent">
+	<div class="tab-pane fade show active" id="text" role="tabpanel" aria-labelledby="text-tab">
+		<br>
+		<form action="{{ url_for('submit_text') }}" method="POST" class="form-signin">
+			<div class="form-group">
+				<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*"><br>
+				<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000"></textarea><br>
+				<input type="submit" class="btn btn-primary" value="Post!" style="text-align: center;" onClick="OnSubmit(this);">
+			</div>
+		</form>
+	</div>
+	<div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image-tab">
+		<br>
+		<form action="{{ url_for('submit_image') }}" method="POST" class="form-signin" enctype="multipart/form-data">
+			<div class="form-group">
+				<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*">
+				<br>
+				<input type="file" name="image" accept="image/*"/>
+				<br><br>
+				<input type="submit" class="btn btn-primary" value="Post!" style="text-align: center;" onClick="OnSubmit(this);">
+			</div>
+		</form>
+	</div>
+</div>
+{% endif %}
 <script>
 	function OnSubmit(el) {
 		el.disabled=true;

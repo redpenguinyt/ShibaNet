@@ -2,11 +2,19 @@ from flask import Flask, request, render_template, redirect, url_for, session
 from flask_pymongo import PyMongo
 from .email import confirmemail
 from .utils import generate_id
-import bcrypt, os
+import bcrypt, os, datetime
 
 app = Flask('ShibaNet')
 app.config["MONGO_URI"] = os.environ["MONGO_URI"]
 mongo = PyMongo(app)
+
+# Errors
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('message.html',title="404",body="Page not found"), 404
+
+# Auth
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -21,6 +29,7 @@ def login():
 	if login_user:
 		if bcrypt.hashpw(request.form["password"].encode("utf-8"), login_user["password"]) == login_user["password"]:
 			session["username"] = request.form["username"]
+			session["theme"] = login_user["theme"]
 			return redirect(url_for("index"))
 	elif mongo.db.tmp_users.find_one({"name": request.form["username"]}):
 		return render_template("auth/login.html", hidenav=True, error="Please confirm your email first")
@@ -78,11 +87,25 @@ def confirm(email, key):
 					"email": tmp_user["email"],
 					"password": tmp_user["password"],
 					"following": ["ShibaNet_Official"],
-					"bio": ""
+					"bio": "",
+					"pfp": "",
+					"theme":"amethyst"
 				}
 			)
-			tmp_users.delete_one({'email': email})
+			mongo.db.notifications.insert_one({
+				"user":tmp_user["name"],
+				"notifs":[
+					{
+						"title":"Welcome to ShibaNet!",
+						"body":"We hope you enjoy using the app :)",
+						"timestamp":datetime.datetime.now(),
+						"read":False
+					}
+				]
+			})
+			tmp_users.delete_many({'email': email})
 			session["username"] = tmp_user["name"]
+			session["theme"] = "amethyst"
 			return redirect(url_for("index"))
 	
 	return render_template("message.html", title="Couldn't confirm email", body="Try again")
