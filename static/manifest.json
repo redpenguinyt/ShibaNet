@@ -1,0 +1,23 @@
+{
+  "name": "ShibaNet - Share what's up",
+  "short_name": "ShibaNet",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/?source=pwa",
+  "id": "/?source=pwa",
+  "background_color": "#302666",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#202528",
+  "description": "Sign up and share with people who have similar interests today!"
+}

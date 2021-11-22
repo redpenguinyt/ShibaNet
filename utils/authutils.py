@@ -1,18 +1,11 @@
-from flask import Flask, request, render_template, redirect, url_for, session
+from flask import request, render_template, redirect, url_for, session
 from flask_pymongo import PyMongo
-from .email import confirmemail
+from .email import confirmemail, iforgor
 from .utils import generate_id
-import bcrypt, os, datetime
+from .flaskutils import app
+import bcrypt, datetime
 
-app = Flask('ShibaNet')
-app.config["MONGO_URI"] = os.environ["MONGO_URI"]
 mongo = PyMongo(app)
-
-# Errors
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('message.html',title="404",body="Page not found"), 404
 
 # Auth
 
@@ -24,11 +17,15 @@ def login():
 		return render_template("auth/login.html", hidenav=True)
 	
 	users = mongo.db.users
-	login_user = users.find_one({"name": request.form["username"]})
+	login_user = None
+	if "@" in str(request.form["username"]):
+		login_user = users.find_one({"email": request.form["username"]})
+	else:
+		login_user = users.find_one({"name": request.form["username"]})
 
 	if login_user:
 		if bcrypt.hashpw(request.form["password"].encode("utf-8"), login_user["password"]) == login_user["password"]:
-			session["username"] = request.form["username"]
+			session["username"] = login_user["name"]
 			session["theme"] = login_user["theme"]
 			return redirect(url_for("index"))
 	elif mongo.db.tmp_users.find_one({"name": request.form["username"]}):
@@ -57,7 +54,8 @@ def register():
 					"name": request.form["username"],
 					"email": request.form["email"],
 					"password": hashpass,
-					"key": confirm_key
+					"key": confirm_key,
+					"type": "new"
 				}
 
 				# Confirm email
@@ -75,10 +73,12 @@ def register():
 
 	return render_template("auth/register.html", hidenav=True)
 
-@app.route("/confirm/<email>/<key>")
-def confirm(email, key):
+@app.route("/confirm/new/")
+def confirm():
+	email = request.args["email"]
+	key = request.args["key"]
 	tmp_users = mongo.db.tmp_users
-	tmp_user = tmp_users.find_one({"email": email})
+	tmp_user = tmp_users.find_one({"email": email,"type":"new"})
 	if tmp_user:
 		if tmp_user["key"] == key:
 			mongo.db.users.insert_one(
@@ -109,6 +109,62 @@ def confirm(email, key):
 			return redirect(url_for("index"))
 	
 	return render_template("message.html", title="Couldn't confirm email", body="Try again")
+
+# Forgot password
+
+@app.route("/iforgor", methods=["POST","GET"])
+def forgot_password():
+	if request.method == "GET":
+		return render_template("auth/forgot.html", hidenav=True)
+	
+	lost_user = mongo.db.users.find_one({"email": request.form["email"]})
+
+	if not lost_user:
+		return render_template("auth/forgot.html", hidenav=True, error="Could not find a user with that email")
+	
+	confirm_key = generate_id(10)
+
+	new_tmp_user = {
+		"email": request.form["email"],
+		"key": confirm_key,
+		"type": "forgot"
+	}
+
+	iforgor(request.form["email"], confirm_key)
+
+	tmp_users = mongo.db.tmp_users
+	tmp_users.delete_many({'email': request.form["email"]})
+	tmp_users.insert_one(new_tmp_user)
+
+	return render_template("message.html",title="Confirm email address", body=f"Check your email ({request.form['email']})")
+
+@app.route("/confirm/forgot/", methods=["POST","GET"])
+def confirm_forgot():
+	if "email" in request.args and "key" in request.args:
+		email = request.args["email"]
+		key = request.args["key"]
+		tmp_users = mongo.db.tmp_users
+		tmp_user = tmp_users.find_one({"email": email,"type":"forgot"})
+
+		if request.method == "GET":
+			if tmp_user:
+				if tmp_user["key"] == key:
+					return render_template("auth/forgot.html",user=tmp_user,email=email,key=key)
+
+		if tmp_user:
+			if tmp_user["key"] == key:
+				password = bcrypt.hashpw(request.form["password"].encode("utf-8"), bcrypt.gensalt())
+				
+				mongo.db.users.find_one_and_update(
+					{"email": tmp_user["email"]},
+					{"$set": {
+						"password": password
+					}}
+				)
+				tmp_users.delete_many({'email': email})
+				return redirect(url_for("login"))
+	
+	return render_template("message.html", title="Couldn't change password", body="Try again")
 
 @app.route("/admin")
 def admin():

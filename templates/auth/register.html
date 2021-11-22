@@ -11,13 +11,30 @@
 		{% endif %}
 		<form action="" method="POST" class="form-signin">
 			<div class="form-group">
-				<input type="username" pattern="[a-zA-Z0-9_]+" class="form-control" name="username" placeholder="Username" pattern=".{4,14}" required title='Minimum 4 characters, Maximum 14, Only use letters, numbers or the symbol "-"'><br>
+				<input type="username" pattern="[a-zA-Z0-9_]{4,14}" class="form-control" name="username" placeholder="Username" required title='Minimum 4 characters, Maximum 14, Only use letters, numbers or the symbol "_"'><br>
+
 				<input type="email" class="form-control" name="email" placeholder="Email" required><br>
-				<input type="password" class="form-control" name="password" placeholder="Password" pattern=".{4,}" required title="Password must be at least 4 characters"><br>
+
+				<input type="password" class="form-control" name="password" id="password" placeholder="Password" pattern=".{4,}" required title="Password must be at least 4 characters"><br>
+
+				<input type="password" class="form-control" placeholder="Confirm password" id="password_confirm" oninput="check(this)" required><br>
+
 				<input style="width: 100%" type="submit" class="btn btn-primary" value="Register" style="text-align: center;">
 			</div>
 		</form><br>
 		<a style="width: 100%" class="btn btn-secondary" role="button" href="{{url_for('login')}}" style="text-align: center;">Already have an account?</a>
 	</div>
 </div>
+
+<script language='javascript' type='text/javascript'>
+    function check(input) {
+        if (input.value != document.getElementById('password').value) {
+            input.setCustomValidity('Passwords must match');
+        } else {
+            // input is valid -- reset the error message
+            input.setCustomValidity('');
+        }
+    }
+</script>
+
 {% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<title>I forgor 💀 - ShibaNet</title>
+<div class="centercontainer">
+	<div class="center">
+		<h3 style="text-align: center;">Oh no you forgor 💀</h3>
+		{% if error %}
+		<div class="alert alert-danger" role="alert">
+			{{ error }}
+		</div>
+		{% endif %}
+
+		{% if not user %}
+		<form action="{{ url_for('forgot_password') }}" method="POST" class="form-signin">
+			<div class="form-group">
+				<input type="email" class="form-control" name="email" placeholder="Email" required><br>
+				
+				<input style="width: 100%" type="submit" class="btn btn-primary" value="Send email" style="text-align: center;">
+			</div>
+		</form>
+		{% else %}
+		<form action="{{ url_for('confirm_forgot',email=email, key=key) }}" method="POST" class="form-signin">
+			<div class="form-group">
+				<input type="password" class="form-control" name="password" id="password" placeholder="New password" pattern=".{4,}" required title="Password must be at least 4 characters"><br>
+
+				<input type="password" class="form-control" placeholder="Confirm new password" id="password_confirm" oninput="check(this)" required><br>
+
+				<input style="width: 100%" type="submit" class="btn btn-primary" value="Confirm" style="text-align: center;">
+			</div>
+		</form>
+		{% endif %}
+	</div>
+</div>
+
+<script language='javascript' type='text/javascript'>
+    function check(input) {
+        if (input.value != document.getElementById('password').value) {
+            input.setCustomValidity('Passwords must match');
+        } else {
+            // input is valid -- reset the error message
+            input.setCustomValidity('');
+        }
+    }
+</script>
+
+{% endblock %}

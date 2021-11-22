@@ -6,7 +6,7 @@
 {{ user["bio"]|e|markdown }}
 <div class="followButton">
 	{% if user["name"] != session["username"] %}
-	<a href="{{ user['name'] }}/follow"> Follow{% if following %}ing{% endif %} </a>
+	<a href="{{ user['name'] }}?follow=1"> Follow{% if following %}ing{% endif %} </a>
 	{% else %}
 	<a href="{{ url_for('user_settings') }}">Settings</a>
 	{% endif %}
