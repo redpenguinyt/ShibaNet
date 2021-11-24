@@ -20,6 +20,14 @@ def server_error(e):
 def forbidden(e):
     return render_template('message.html',title="Forbidden",body="You can't do that"), 403
 
+@app.template_filter()
+def pretty_time(time_delta):
+	result = time_delta.strftime("%A %-d{0} %B %Y at %H:%M")
+	day_suffix = "th"
+
+
+	return result.format(day_suffix)
+
 @app.route("/test")
 def test():
 	if not "username" in session:

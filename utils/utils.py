@@ -1,4 +1,5 @@
 import flask_pymongo, datetime, secrets
+from .mongoutils import mongo
 
 def generate_id(length, collection=None):
 	new_id = secrets.token_hex(length)
@@ -6,9 +7,6 @@ def generate_id(length, collection=None):
 		if collection.find_one({"_id":new_id}):
 			new_id = generate_id(collection)
 	return new_id
-
-def format_time(time_del):
-	return time_del.strftime("%A %-dth %B %Y at %H:%M")
 
 def isCoolDown(username, posts):
 	if posts.count_documents({"author": username}) >= 1:
@@ -21,3 +19,9 @@ def isCoolDown(username, posts):
 		
 		return mins_since_post
 	return 0
+
+def like(post, username, likeType=1):
+	if username in post["score"]:
+		mongo.db.posts.find_one_and_update({"_id": post["_id"]},{"score":{"$unset":{username: likeType}}})
+	else:
+		mongo.db.posts.find_one_and_update({"_id": post["_id"]},{"score":{"$set":{username: likeType}}})

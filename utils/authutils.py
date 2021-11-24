@@ -1,11 +1,9 @@
 from flask import request, render_template, redirect, url_for, session
-from flask_pymongo import PyMongo
 from .email import confirmemail, iforgor
 from .utils import generate_id
 from .flaskutils import app
+from .mongoutils import mongo
 import bcrypt, datetime
-
-mongo = PyMongo(app)
 
 # Auth
 
@@ -18,9 +16,12 @@ def login():
 	
 	users = mongo.db.users
 	login_user = None
-	if "@" in str(request.form["username"]):
-		login_user = users.find_one({"email": request.form["username"]})
-	else:
+	try:
+		if "@" in request.form["username"]:
+			login_user = users.find_one({"email": request.form["username"]})
+		else:
+			login_user = users.find_one({"name": request.form["username"]})
+	except:
 		login_user = users.find_one({"name": request.form["username"]})
 
 	if login_user:
@@ -44,8 +45,8 @@ def register():
 		users = mongo.db.users
 		existing_user = users.find_one({"name": request.form["username"]})
 		existing_email = users.find_one({"email": request.form["email"]})
-		if existing_user is None:
-			if existing_email is None:
+		if not existing_user:
+			if not existing_email:
 				hashpass = bcrypt.hashpw(request.form["password"].encode("utf-8"), bcrypt.gensalt())
 
 				confirm_key = generate_id(10)
@@ -59,7 +60,10 @@ def register():
 				}
 
 				# Confirm email
-				confirmemail(new_tmp_user, confirm_key)
+				e_result = confirmemail(new_tmp_user, confirm_key)
+
+				if e_result == "error":
+					return render_template("auth/register.html", hidenav=True, error="That email could not be used")
 
 				tmp_users = mongo.db.tmp_users
 				tmp_users.delete_many({'email': request.form["email"]})
@@ -69,7 +73,7 @@ def register():
 			else:
 				return render_template("auth/register.html", hidenav=True, error="Email is already in use")
 		else:
-			return render_template("auth/register.html", hidenav=True, error="Username already exists")
+			return render_template("auth/register.html", hidenav=True, error="Username is already in use")
 
 	return render_template("auth/register.html", hidenav=True)
 

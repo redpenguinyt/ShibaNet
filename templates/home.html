@@ -16,16 +16,16 @@
 	</a>
 </h6>
 
-{% if session["username"] == post["author"] %}
-<button class="btn"><a href="{{ url_for('delete_post',post_id=post['_id']) }}"><i class="fa fa-trash"></i></a></button>
-	{% if post["type"] == "text" %}
-	<button class="btn"><a href="{{ url_for('edit_post',post_id=post['_id']) }}"><i class="fa fa-edit"></i></a></button>
-	{% endif %}
-{% endif %}
-
 <div class="{{ post['type'] }}_post">
 {{ post["body"] | e | truncate(200) | markdown }}
 </div>
+
+{% if session["username"] == post["author"] %}
+{% if post["type"] == "text" %}
+	<button class="btn"><a href="{{ url_for('edit_post',post_id=post['_id']) }}"><i class="fa fa-edit"></i></a></button>
+{% endif %}
+<button class="btn"><a href="{{ url_for('delete_post',post_id=post['_id']) }}"><i class="fa fa-trash"></i></a></button>
+{% endif %}
 
 {% endfor %}
 {% endblock %}

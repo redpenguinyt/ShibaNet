@@ -1,9 +1,9 @@
 from flask import render_template, url_for, session, redirect, request
 import os, logging, datetime, flask_pymongo
-
-from utils.authutils import mongo
+from utils.mongoutils import mongo
 from utils.flaskutils import app
-from utils import imgur, utils, notifs, shortlinks
+from utils import imgur, utils, notifs
+from utils import shortlinks, authutils
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -12,12 +12,12 @@ log.setLevel(logging.ERROR)
 
 @app.route("/")
 def index():
-	if not "username" in session:
-		return redirect(url_for("login"))
-	user_notifs = notifs.get_notifs(session["username"])
+	user_notifs = []
+	if "username" in session:
+		user_notifs = notifs.get_notifs(session["username"])
 
 	if "sort" in request.args:
-		if request.args["sort"] == "All":
+		if request.args["sort"] == "All" or not "username" in session:
 			all_posts = mongo.db.posts.find().sort('timestamp', flask_pymongo.DESCENDING)
 
 			return render_template("home.html", posts=all_posts, notifs=user_notifs)
@@ -28,6 +28,7 @@ def index():
 			recent_posts = mongo.db.posts.find({"author": {"$in": following}}).sort('timestamp', flask_pymongo.DESCENDING)
 
 			return render_template("home.html", posts=recent_posts, notifs=user_notifs)
+			
 	return redirect(url_for("index", sort="Following"))
 
 # Posts
@@ -89,19 +90,21 @@ def submit():
 
 @app.route("/post/<post_id>", methods=["GET"])
 def view_post(post_id):
+	post = mongo.db.posts.find_one({"_id": post_id})
+
 	user_notifs = []
 	if "username" in session:
 		user_notifs = notifs.get_notifs(session["username"])
-
-	post = mongo.db.posts.find_one({"_id": post_id})
+		if "like" in request.args:
+			utils.like(post, session["username"])
+	
 	if not post:
 		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
-	
+
 	authorpfp = mongo.db.users.find_one(
 		{"name": post["author"]}
 	)["pfp"]
-	clean_time = utils.format_time(post["timestamp"])
-	return render_template("post/view.html", post=post, timestamp=clean_time, authorpfp=authorpfp, notifs=user_notifs)
+	return render_template("post/view.html", post=post, authorpfp=authorpfp, notifs=user_notifs)
 
 @app.route("/post/<post_id>/delete")
 def delete_post(post_id):

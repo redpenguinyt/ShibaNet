@@ -1,5 +1,5 @@
 from .authutils import mongo
-from .utils import generate_id, format_time
+from .utils import generate_id
 import datetime
 
 def get_notif(user, notif_id):
@@ -53,16 +53,12 @@ def call_all(title, body=None):
 	for user in mongo.db.users.find():
 		call(user["name"], title, body)
 
-def get_notifs(username, mod_time=True):
+def get_notifs(username):
 	user = mongo.db.notifications.find_one({"user": username})
 	
 	unread = list(filter(lambda d: d['read'] in [False], user["notifs"]))
 
 	sorted_notifs = sorted(unread, key=lambda d: d['timestamp'], reverse=True)
-
-	if mod_time:
-		for notif in range(len(sorted_notifs)):
-			sorted_notifs[notif]["timestamp"] = format_time(sorted_notifs[notif]["timestamp"])
 
 	return sorted_notifs
 

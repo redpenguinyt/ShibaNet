@@ -23,7 +23,7 @@
 			<div class="form-group">
 				<input type="password" class="form-control" name="password" id="password" placeholder="New password" pattern=".{4,}" required title="Password must be at least 4 characters"><br>
 
-				<input type="password" class="form-control" placeholder="Confirm new password" id="password_confirm" oninput="check(this)" required><br>
+				<input type="password" class="form-control" placeholder="Confirm new password" id="password_confirm" oninput="check_match(this)" required><br>
 
 				<input style="width: 100%" type="submit" class="btn btn-primary" value="Confirm" style="text-align: center;">
 			</div>
@@ -32,15 +32,15 @@
 	</div>
 </div>
 
-<script language='javascript' type='text/javascript'>
-    function check(input) {
-        if (input.value != document.getElementById('password').value) {
-            input.setCustomValidity('Passwords must match');
-        } else {
-            // input is valid -- reset the error message
-            input.setCustomValidity('');
-        }
-    }
+<script>
+	function check_match(input) {
+		if (input.value != document.getElementById('password').value) {
+			input.setCustomValidity('Passwords must match');
+		} else {
+			// input is valid -- reset the error message
+			input.setCustomValidity('');
+		}
+	}
 </script>
 
 {% endblock %}

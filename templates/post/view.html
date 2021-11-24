@@ -21,7 +21,7 @@
 	{% endif %}
 {% endif %}
 
-<br><br><p class="timestamp">Posted on {{ timestamp }}</p>
+<br><br><p class="timestamp">Posted on {{ post["timestamp"]|pretty_time }}</p>
 
 {%- for subcomment in comment recursive %}
     <li><a href="{{ item.href|e }}">{{ item.title }}</a>

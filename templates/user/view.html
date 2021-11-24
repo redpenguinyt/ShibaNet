@@ -3,8 +3,12 @@
 <title>{{ user["name"] }} - ShibaNet</title>
 <img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://i.imgur.com/WxNkK7J.png'" alt="" class="rounded" width="100px" height="100px">
 <h2>{{ user["name"] }}</h2>
-{{ user["bio"]|e|markdown }}
+{{ user["bio"]|e|truncate(75)|markdown }}
 <div class="followButton">
+	{% if friends %}
+	You are friends
+	{% endif %}
+
 	{% if user["name"] != session["username"] %}
 	<a href="{{ user['name'] }}?follow=1"> Follow{% if following %}ing{% endif %} </a>
 	{% else %}
@@ -20,7 +24,7 @@
     	<button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab" aria-controls="comments" aria-selected="false">Comments</button>
   	</li>
   	<li class="nav-item" role="presentation">
-    	<button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+    	<button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="false">About</button>
   	</li>
 </ul>
 <div class="tab-content" id="myTabContent">
@@ -29,16 +33,17 @@
 		{% for post in user_posts %}
 		<h4><a href={{ url_for("view_post", post_id=post["_id"]) }}>{{ post["title"]|e|markdown }}</a></h4>
 
-		{% if session["username"] == post["author"] %}
-		<button class="btn"><a href="{{ url_for('delete_post',post_id=post['_id']) }}"><i class="fa fa-trash"></i></a></button>
-			{% if post["type"] == "text" %}
-			<button class="btn"><a href="{{ url_for('edit_post',post_id=post['_id']) }}"><i class="fa fa-edit"></i></a></button>
-			{% endif %}
-		{% endif %}
-
 		<div class="{{ post['type'] }}_post">
 			{{ post["body"] | e | truncate(200) | markdown }}
 		</div>
+
+		{% if session["username"] == post["author"] %}
+		{% if post["type"] == "text" %}
+			<button class="btn"><a href="{{ url_for('edit_post',post_id=post['_id']) }}"><i class="fa fa-edit"></i></a></button>
+		{% endif %}
+		<button class="btn"><a href="{{ url_for('delete_post',post_id=post['_id']) }}"><i class="fa fa-trash"></i></a></button>
+		{% endif %}
+
 		<hr>
 		{% endfor %}
 	</div>
@@ -46,9 +51,9 @@
 		<br>
 		Comments appear here
 	</div>
-	<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+	<div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
 		<br>
-		Not sure what to put here yet
+		{{ user["bio"]|e|markdown }}
 	</div>
 </div>
 

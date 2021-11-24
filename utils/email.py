@@ -14,11 +14,17 @@ contents = """
 """
 
 def confirmemail(user, key):
-	link = f"https://shibanet.repl.co/confirm/new?email={user['email']}&key={key}"
+	try:
+		link = f"https://shibanet.repl.co/confirm/new?email={user['email']}&key={key}"
 
-	yag.send(user["email"], "Confirm email - ShibaNet", contents.format("Confirm your email",link))
+		yag.send(user["email"], "Confirm email - ShibaNet", contents.format("Confirm your email",link))
+	except:
+		return "error"
 
 def iforgor(email, key):
-	link = f"https://shibanet.repl.co/confirm/forgot?email={email}&key={key}"
+	try:
+		link = f"https://shibanet.repl.co/confirm/forgot?email={email}&key={key}"
 
-	yag.send(email, "Forgot password - ShibaNet", contents.format("Forgot password",link))
+		yag.send(email, "Forgot password - ShibaNet", contents.format("Forgot password",link))
+	except:
+		return "error"
