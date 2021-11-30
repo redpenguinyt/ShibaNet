@@ -22,7 +22,7 @@
 	<hr>
 	<h6>
 		Posted by 
-		<a href='{{ url_for("view_user", username=post["author"]) }}'>
+		<a href='{{ url_for("view_user", username=cmt["author"]) }}'>
 			{{ cmt["author"] }}
 		</a>
 	</h6>
@@ -31,8 +31,11 @@
 		{% if "username" in session %}
 			<a class="badge badge-primary" href="{{ url_for('subcomment',post_id=post['_id'], parent_cmt_id=cmt['_id']) }}"><i class="fa fa-comment fa-lg"></i></a>
 		{% endif %}
+
     	{%- if cmt["children"] -%}
-        	<div style="padding-left:15px">{{ loop(cmt["children"]) }}</div>
+			<div class="comment">
+				{{ loop(cmt["children"]) }}
+			</div>
     	{%- endif %}
 	</div>
 {%- endfor %}

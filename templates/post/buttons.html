@@ -12,7 +12,7 @@
 
 {# Moderation #}
 
-{% if session["username"] == post["author"] %}
+{% if session["username"] == post["author"] or session["username"]|is_mod %}
 	{% if post["type"] == "text" %}
 		<a class="badge badge-primary" href="{{ url_for('edit_post',post_id=post['_id']) }}"><i class="fa fa-edit fa-lg"></i></a>
 	{% endif %}

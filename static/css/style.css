@@ -57,6 +57,10 @@ hr {
   color: inherit;
   text-decoration: inherit;
 }
+.comment {
+	border-left: 1px solid gray;
+	padding-left: 15px;
+}
 
 .theme_select {
 	background-color: #5f5f5f;
