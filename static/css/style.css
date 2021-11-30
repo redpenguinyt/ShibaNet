@@ -34,9 +34,20 @@ img.rounded {
 hr {
 	width: 60%;
 }
-.image_post * img {
+.image_post * img, .text_post * img {
 	max-width: 65%;
 }
+.fa-thumbs-up, .fa-thumbs-down, .fa-comment, .fa-edit, .fa-trash {
+	color: rgb(51, 71, 255);
+}
+.nav-link {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.nav-link * .fa-bell {
+    margin-right: 4px;
+}
+
 .timestamp {
 	font-size: 15px;
 	color: #646464;

@@ -20,6 +20,25 @@ def isCoolDown(username, posts):
 		return mins_since_post
 	return 0
 
+def cursor_to_json(cursor):
+	result = []
+
+	for doc in cursor:
+		result.append(doc)
+
+	return result
+
+def getcomments(comment_ids):
+	result = mongo.db.comments.find({"_id": {"$in": comment_ids}})
+
+	comments = cursor_to_json(result)
+
+	for comment in comments:
+		if comment["children"]:
+			comment["children"] = getcomments(comment["children"])
+	
+	return comments
+
 def like(post, username, likeType=1):
 	if username in post["score"]:
 		mongo.db.posts.find_one_and_update({"_id": post["_id"]},{"score":{"$unset":{username: likeType}}})

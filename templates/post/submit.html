@@ -1,16 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<title>{% if edit_post %}Edit{% else %}Submit{% endif %} - ShibaNet</title>
-<h2>{% if edit_post %}Edit{% else %}Create{% endif %} a post</h2><br>
+<title>{% if comment %}Comment{% elif edit_post %}Edit{% else %}Submit{% endif %} - ShibaNet</title>
+<h2>{% if comment %}Comment on "{{ ex_post["title"] if ex_post["title"] else ex_post["body"] }}"{% elif edit_post %}Edit "{{ ex_post["title"] }}"{% else %}Submit a post{% endif %}</h2><br>
+
 {% if error %}
 <div class="alert alert-danger" role="alert">{{ error }}</div>
 {% endif %}
 
-{% if edit_post %}
-<form action="{{ url_for('edit_post', post_id=edit_post['_id']) }}" method="POST" class="form-signin">
+{% if comment %}
+<form action="{{ url_for('subcomment', post_id=pst_id, parent_cmt_id=ex_post['_id']) if pst_id else url_for('comment', post_id=ex_post['_id']) }}" method="POST" class="form-signin">
 	<div class="form-group">
-		<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*" value="{{ edit_post['title'] }}"><br>
-		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000">{{ edit_post['body'] }}</textarea><br>
+		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000" required></textarea><br>
+		<input type="submit" class="btn btn-primary" value="Comment" style="text-align: center;" onClick="OnSubmit(this);">
+	</div>
+</form>
+{% elif ex_post %}
+<form action="{{ url_for('edit_post', post_id=ex_post['_id']) }}" method="POST" class="form-signin">
+	<div class="form-group">
+		<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*" value="{{ ex_post['title'] }}"><br>
+		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000">{{ ex_post['body'] }}</textarea><br>
 		<input type="submit" class="btn btn-primary" value="Edit" style="text-align: center;" onClick="OnSubmit(this);">
 	</div>
 </form>
@@ -48,6 +56,7 @@
 	</div>
 </div>
 {% endif %}
+
 <script>
 	function OnSubmit(el) {
 		el.disabled=true;

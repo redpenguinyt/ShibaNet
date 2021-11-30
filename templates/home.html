@@ -7,7 +7,6 @@
 	<a href="/?sort=All">All</a> 
 </h6>
 
-
 {% for post in posts %}
 <hr>
 <h4><a href={{ url_for("view_post", post_id=post["_id"]) }}>{{ post["title"]|e|markdown }}</a></h4>
@@ -20,12 +19,8 @@
 {{ post["body"] | e | truncate(200) | markdown }}
 </div>
 
-{% if session["username"] == post["author"] %}
-{% if post["type"] == "text" %}
-	<button class="btn"><a href="{{ url_for('edit_post',post_id=post['_id']) }}"><i class="fa fa-edit"></i></a></button>
-{% endif %}
-<button class="btn"><a href="{{ url_for('delete_post',post_id=post['_id']) }}"><i class="fa fa-trash"></i></a></button>
-{% endif %}
+{% include 'post/buttons.html' %}
 
 {% endfor %}
+
 {% endblock %}

@@ -6,6 +6,13 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="shortcut icon" type="image/jpg" href="/static/icons/favicon.ico"/>
 
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+		<script data-ad-client="ca-pub-9866851955040612" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+		<script type="text/javascript" src="/static/js/index.js"></script>
+
 		<link rel="manifest" href="/static/manifest.json">
 		<meta name="description" content="Sign up and share with people who have similar interests today :D">
 		<meta charset="utf-8">
@@ -29,18 +36,18 @@
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 						<li class="nav-item">
-							<a class="nav-link" href="/">Home</a>
+							<a class="nav-link" href="/"><i class="fa fa-home fa-lg" aria-hidden="true"></i> Home</a>
 						</li>
 						{% if "username" in session %}
 						<li class="nav-item">
-							<a class="nav-link" href={{ url_for("submit") }}>Post</a>
+							<a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a>
 						</li>
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ session["username"] }}</a>
 							<ul class="dropdown-menu bg-dark" aria-labelledby="navbarDropdownMenuLink">
-								<li><a class="nav-link" href={{ url_for("view_user",username="me") }}>Profile</a></li>
-								<li><a class="nav-link" href={{ url_for("submit") }}>Post</a></li>
-								<li><a class="nav-link" href={{ url_for("user_settings") }}>Settings</a></li>
+								<li><a class="nav-link" href={{ url_for("view_user",username="me") }}><i class="fa fa-user fa-lg" aria-hidden="true"></i> Profile</a></li>
+								<li><a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a></li>
+								<li><a class="nav-link" href={{ url_for("user_settings") }}><i class="fa fa-cog fa-lg" aria-hidden="true"></i> Settings</a></li>
 							</ul>
 						</li>
 						{% endif %}
@@ -48,14 +55,18 @@
 					<ul class="navbar-nav ml-auto">
 						{% if "username" in session %}
 						<li class="nav-item">
-							<span class="badge badge-pill badge-primary" style="float:right;margin-bottom:-10px;">{{ notifs|count if notifs|count > 0 else ""}}</span>
-							<a class="nav-link" data-bs-toggle="offcanvas" href="#notifications" role="button" aria-controls="notifications">Notifications</a>
+							<a class="nav-link" data-bs-toggle="offcanvas" href="#notifications" role="button" aria-controls="notifications">
+								<span class="position-relative">
+									<i class="fa fa-bell fa-lg"></i>
+									<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif_badge">{{ notifs|count if notifs|count > 0 else ""}}</span>
+								</span>
+							</a>
 						</li>
 						{% endif %}
 						
 						<li class="nav-item">
 						{% if "username" in session %}
-						<a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')">Logout</a>
+						<a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')">Logout <i class="fa fa-sign-out fa-lg" aria-hidden="true"></i></a>
 						{% else %}
 						<a class="nav-link" href={{ url_for("login") }}>Login</a>
 						{% endif %}
@@ -68,12 +79,6 @@
 		</header>
 {% endif %}
 		<div class="main">
-			{% if source in request.args %}
-				{% if request.args["source"] == "pwa" %}
-					pwa time!
-				{% endif %}
-			{% endif %}
-
 			{% block content %}
 			{% endblock %}
 		</div>
@@ -81,28 +86,23 @@
 		<div style="color:white;" class="offcanvas offcanvas-end bg-dark" tabindex="-1" id="notifications" aria-labelledby="notificationsLabel">
 			<div class="offcanvas-header">
 				<h5 id="notificationsLabel">Notifications</h5>
-				<a href="#" id="markread"><button class='btn btn-primary' onclick="this.value='Success!';">Mark All Read</button></a>
+				<a href="#" id="markread" class='btn {% if notifs %}btn-primary {% else %} btn-secondary disabled{% endif %}'>Mark All Read</a>
     			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 			</div>
 			<div class="offcanvas-body">
-				{% for notif in notifs %}
+				<div id="all_notifs">
+					{% for notif in notifs %}
 
-				<div class="main">
-						<h6><a class="no-highlight" href="{{ url_for('view_notif') }}?notif={{ notif['_id'] }}">{{ notif["title"]|markdown }}</a></h6>
+					<div class="main">
+						<h6><a class="no-highlight" href="{{ notif['link'] if 'link' in notif else url_for('view_notif', notif=notif['_id']) }}">{{ notif["title"]|markdown }}</a></h6>
 						<div class="main">{{ notif["body"]|e|truncate(50)|markdown }}</div>
-				<p class="timestamp">{{ notif["timestamp"]|pretty_time }}</p>
+					<p class="timestamp">{{ notif["timestamp"]|pretty_time }}</p>
+					</div>
+					<hr>
+					{% endfor %}
 				</div>
-				<hr>
-				{% endfor %}
 				You have no more new notifications
 			</div>
 		</div>
 	</body>
 </html>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
-<script data-ad-client="ca-pub-9866851955040612" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
-<script type="text/javascript" src="/static/js/index.js"></script>

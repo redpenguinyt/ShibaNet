@@ -1,4 +1,5 @@
 from flask import request, render_template, redirect, url_for, session
+from functools import wraps
 from .email import confirmemail, iforgor
 from .utils import generate_id
 from .flaskutils import app
@@ -6,6 +7,15 @@ from .mongoutils import mongo
 import bcrypt, datetime
 
 # Auth
+
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'username' in session:
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('login'))
+    return wrap
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -35,6 +45,7 @@ def login():
 	return render_template("auth/login.html", hidenav=True, error="Incorrect username or password")
 
 @app.route("/logout")
+@login_required
 def logout():
 	session.clear()
 	return redirect(url_for('index'))
@@ -79,6 +90,8 @@ def register():
 
 @app.route("/confirm/new/")
 def confirm():
+	if not "email" in request.args or not "key" in request.args:
+		return render_template("message.html", title="Couldn't confirm email", body="Try again")
 	email = request.args["email"]
 	key = request.args["key"]
 	tmp_users = mongo.db.tmp_users
@@ -100,8 +113,9 @@ def confirm():
 				"user":tmp_user["name"],
 				"notifs":[
 					{
-						"title":"Welcome to ShibaNet!",
-						"body":"We hope you enjoy using the app :)",
+						"_id": "0001",
+						"title": "Welcome to ShibaNet!",
+						"body": "We hope you enjoy using the app :)",
 						"timestamp":datetime.datetime.now(),
 						"read":False
 					}

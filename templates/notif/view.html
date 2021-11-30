@@ -8,6 +8,6 @@
 	{{ notif["body"]|e|markdown }}
 </div>
 
-<br><br><p class="timestamp">Recieved on {{ timestamp }}</p>
+<br><br><p class="timestamp">Recieved on {{ notif["timestamp"]|pretty_time }}</p>
 
 {% endblock %}

@@ -27,7 +27,7 @@ def mark_read_all(user):
 	for notif in mongo.db.notifications.find_one({"user":user})["notifs"]:
 		mark_read(user, notif["_id"])
 
-def call(user, title, body=None):
+def call(user, title, body=None, link=""):
 	if not body:
 		body = title
 	
@@ -39,6 +39,7 @@ def call(user, title, body=None):
 			"_id": notif_id,
 			"title": title,
 			"body": body,
+			"link": link,
 			"timestamp": datetime.datetime.now(),
 			"read": False
 		}}}
