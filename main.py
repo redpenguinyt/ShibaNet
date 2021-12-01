@@ -200,13 +200,13 @@ def comment(post_id):
 		{ "_id": post_id }, 
 		{"$push": {"comments": cmt_id}}
 	)
-
-	notifs.call(
-		post["author"],
-		f"{session['username']} commented on your post!",
-		request.form["body"],
-		url_for("view_post", post_id=post_id)
-	)
+	if session["username"] != post["author"]:
+		notifs.call(
+			post["author"],
+			f"{session['username']} commented on your post!",
+			request.form["body"],
+			url_for("view_post", post_id=post_id)
+		)
 	return redirect(url_for("view_post", post_id=post_id))
 
 @app.route("/post/<post_id>/comment/<parent_cmt_id>", methods=["POST","GET"])
@@ -243,13 +243,13 @@ def subcomment(post_id, parent_cmt_id):
 		{"_id": parent_cmt_id}, 
 		{"$push": {"children": cmt_id}}
 	)
-
-	notifs.call(
-		parent["author"],
-		f"{session['username']} replied to your comment!",
-		request.form["body"],
-		url_for("view_post", post_id=post_id)
-	)
+	if session["username"] != parent["author"]:
+		notifs.call(
+			parent["author"],
+			f"{session['username']} replied to your comment!",
+			request.form["body"],
+			url_for("view_post", post_id=post_id)
+		)
 	return redirect(url_for("view_post", post_id=post_id))
 
 @app.route("/comment/<cmt_id>/edit", methods=["POST","GET"])
@@ -329,7 +329,7 @@ def view_user(username):
 
 		friends = following and session["username"] in users.find_one({"name": username})["following"]
 	
-	if "follow" in request.args:
+	if "follow" in request.args and session["username"] != username:
 		if following:
 			mongo.db.users.find_one_and_update(
 				{ "name": session["username"] }, 
@@ -414,7 +414,8 @@ def view_notif():
 	user_notifs = notifs.get_notifs(session["username"])
 
 	if "link" in notif:
-		return redirect(notif["link"])
+		if notif["link"]:
+			return redirect(notif["link"])
 
 	return render_template("notif/view.html",notif=notif, notifs=user_notifs)
 

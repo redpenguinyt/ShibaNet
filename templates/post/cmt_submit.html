@@ -14,14 +14,14 @@
 {% if ex_cmt %}
 <form action="{{ url_for('edit_comment', cmt_id=ex_cmt['_id'])}}" method="POST">
 	<div class="form-group">
-		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000" required autofocus>{{ ex_cmt['body'] }}</textarea><br>
+		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="300" required autofocus>{{ ex_cmt['body'] }}</textarea><br>
 		<input type="submit" class="btn btn-primary" value="Comment" style="text-align: center;" onClick="OnSubmit(this);">
 	</div>
 </form>
 {% else %}
 <form action="{{ url_for('subcomment', post_id=pst_id, parent_cmt_id=prnt['_id']) if pst_id else url_for('comment', post_id=prnt['_id']) }}" method="POST">
 	<div class="form-group">
-		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000" required autofocus></textarea><br>
+		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="300" required autofocus></textarea><br>
 		<input type="submit" class="btn btn-primary" value="Comment" style="text-align: center;" onClick="OnSubmit(this);">
 	</div>
 </form>
