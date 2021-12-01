@@ -19,14 +19,14 @@ def index():
 
 	if "sort" in request.args:
 		if request.args["sort"] == "All" or not "username" in session:
-			all_posts = mongo.db.posts.find().sort('timestamp', flask_pymongo.DESCENDING)
+			all_posts = mongo.db.posts.find({"timestamp":{"$lte": datetime.datetime.now()}}).sort('timestamp', flask_pymongo.DESCENDING)
 
 			return render_template("home.html", posts=all_posts, notifs=user_notifs)
 		elif request.args["sort"] == "Following":
 			following = mongo.db.users.find_one({"name": session["username"]})["following"]
 			following.append(session["username"])
 
-			recent_posts = mongo.db.posts.find({"author": {"$in": following}}).sort('timestamp', flask_pymongo.DESCENDING)
+			recent_posts = mongo.db.posts.find({"timestamp":{"$lte": datetime.datetime.now()}, "author": {"$in": following}}).sort('timestamp', flask_pymongo.DESCENDING)
 
 			return render_template("home.html", posts=recent_posts, notifs=user_notifs)
 			

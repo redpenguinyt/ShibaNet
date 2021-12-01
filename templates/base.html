@@ -16,7 +16,7 @@
 		<link rel="manifest" href="/static/manifest.json">
 		<meta name="description" content="Sign up and share with people who have similar interests today :D">
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=no">
 		<meta name="keywords" content="ShibaNet, Social, network, social network, shibanet">
 	</head>
 {% if "theme" in session %}
@@ -83,7 +83,7 @@
 			{% endblock %}
 		</div>
 
-		<div style="color:white;" class="offcanvas offcanvas-end bg-dark" tabindex="-1" id="notifications" aria-labelledby="notificationsLabel">
+		<div style="color:white;" class="offcanvas offcanvas-end bg-dark" data-bs-scroll="true" tabindex="-1" id="notifications" aria-labelledby="notificationsLabel">
 			<div class="offcanvas-header">
 				<h5 id="notificationsLabel">Notifications</h5>
 				<a href="#" id="markread" class='btn {% if notifs %}btn-primary {% else %} btn-secondary disabled{% endif %}'>Mark All Read</a>
