@@ -39,8 +39,16 @@ def is_mod(username):
 	user = mongo.db.users.find_one({"author": username})
 	if not user:
 		return False
-	if user["is_mod"]:
-		return True
+	return user["is_mod"]
+
+@app.template_filter()
+def getparenttitle(comment):
+	if comment["parent"]["type"] == "post":
+		post = mongo.db.posts.find_one({"_id": comment["parent"]["id"]})
+		return post["title"]
+	else:
+		parent_cmt = mongo.db.comments.find_one({"_id": comment["parent"]["id"]})
+		return parent_cmt["body"]
 
 @app.route("/test")
 def test():

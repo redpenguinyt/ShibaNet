@@ -236,7 +236,8 @@ def subcomment(post_id, parent_cmt_id):
 		"parent": {
 			"type": "comment",
 			"id": parent_cmt_id
-		}
+		},
+		"timestamp": datetime.datetime.now()
 	})
 	mongo.db.comments.find_one_and_update(
 		{"_id": parent_cmt_id}, 
@@ -346,13 +347,16 @@ def view_user(username):
 
 	user_posts = mongo.db.posts.find({"author":user["name"]}).sort('timestamp', flask_pymongo.DESCENDING)
 
+	user_comments = mongo.db.comments.find({"author":user["name"]}).sort('timestamp', flask_pymongo.DESCENDING)
+
 	return render_template(
 		"user/view.html",
 		user = user,
 		user_posts = user_posts,
+		user_comments = user_comments,
 		following = following,
-		friends=friends,
-		notifs=user_notifs
+		friends = friends,
+		notifs = user_notifs
 	)
 
 @app.route("/settings", methods=["POST","GET"])
