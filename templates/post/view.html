@@ -27,9 +27,13 @@
 		</a>
 	</h6>
     <div>
-		{{ cmt["body"] }}<br>
-		{% if "username" in session %}
+		{{ cmt["body"]|e|markdown }}
+		{% if "username" in session and cmt["author"] != "{deleted}" %}
 			<a class="badge badge-primary" href="{{ url_for('subcomment',post_id=post['_id'], parent_cmt_id=cmt['_id']) }}"><i class="fa fa-comment fa-lg"></i></a>
+			{% if session["username"] == cmt["author"] or session["username"]|is_mod %}
+				<a class="badge badge-primary" href="{{ url_for('edit_comment',cmt_id=cmt['_id']) }}"><i class="fa fa-edit fa-lg"></i></a>
+				<a class="badge badge-primary" href="{{ url_for('delete_comment',cmt_id=cmt['_id']) }}"><i class="fa fa-trash fa-lg"></i></a>
+			{% endif %}
 		{% endif %}
 
     	{%- if cmt["children"] -%}

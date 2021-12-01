@@ -14,7 +14,7 @@ def login_required(f):
         if 'username' in session:
             return f(*args, **kwargs)
         else:
-            return redirect(url_for('login'))
+            return redirect(url_for('login',next=f.__name__))
     return wrap
 
 @app.route("/login", methods=["POST", "GET"])
@@ -38,6 +38,8 @@ def login():
 		if bcrypt.hashpw(request.form["password"].encode("utf-8"), login_user["password"]) == login_user["password"]:
 			session["username"] = login_user["name"]
 			session["theme"] = login_user["theme"]
+			if "next" in request.args:
+				return redirect(url_for(request.args["next"]))
 			return redirect(url_for("index"))
 	elif mongo.db.tmp_users.find_one({"name": request.form["username"]}):
 		return render_template("auth/login.html", hidenav=True, error="Please confirm your email first")

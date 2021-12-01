@@ -94,7 +94,7 @@
 					{% for notif in notifs %}
 
 					<div class="main">
-						<h6><a class="no-highlight" href="{{ notif['link'] if 'link' in notif else url_for('view_notif', notif=notif['_id']) }}">{{ notif["title"]|markdown }}</a></h6>
+						<h6><a class="no-highlight" href="{{ url_for('view_notif', notif=notif['_id']) }}">{{ notif["title"]|markdown }}</a></h6>
 						<div class="main">{{ notif["body"]|e|truncate(50)|markdown }}</div>
 					<p class="timestamp">{{ notif["timestamp"]|pretty_time }}</p>
 					</div>

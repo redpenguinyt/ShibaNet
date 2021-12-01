@@ -13,7 +13,7 @@
 		{% if not user %}
 		<form action="{{ url_for('forgot_password') }}" method="POST" class="form-signin">
 			<div class="form-group">
-				<input type="email" class="form-control" name="email" placeholder="Email" required><br>
+				<input type="email" class="form-control" name="email" placeholder="Email" required autofocus><br>
 				
 				<input style="width: 100%" type="submit" class="btn btn-primary" value="Send email" style="text-align: center;">
 			</div>
