@@ -56,10 +56,11 @@ def is_mod(username):
 def getparenttitle(comment):
 	if comment["parent"]["type"] == "post":
 		post = mongo.db.posts.find_one({"_id": comment["parent"]["id"]})
-		return post["title"]
+		if post: return post["title"]
 	else:
 		parent_cmt = mongo.db.comments.find_one({"_id": comment["parent"]["id"]})
-		return parent_cmt["body"]
+		if parent_cmt: return parent_cmt["body"]
+	return "{deleted}"
 
 @app.route("/test")
 def test():

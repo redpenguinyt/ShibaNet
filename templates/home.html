@@ -3,6 +3,7 @@
 <title>Home - ShibaNet</title>
 <script>
     var sortBy = '{{ request.args["sort"] }}';
+	var user = '';
 </script>
 
 <h6>Sort by: 
@@ -10,6 +11,6 @@
 	<a href="/?sort=All">All</a> 
 </h6>
 
-{% include 'post/cmt_buttons.html' %}
+{% include 'post/template.html' %}
 
 {% endblock %}

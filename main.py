@@ -339,14 +339,11 @@ def view_user(username):
 		
 		return redirect(url_for("view_user", username=username))
 
-	user_posts = mongo.db.posts.find({"author":user["name"]}).sort('timestamp', flask_pymongo.DESCENDING)
-
 	user_comments = mongo.db.comments.find({"author":user["name"]}).sort('timestamp', flask_pymongo.DESCENDING)
 
 	return render_template(
 		"user/view.html",
 		user = user,
-		user_posts = user_posts,
 		user_comments = user_comments,
 		following = following,
 		friends = friends,

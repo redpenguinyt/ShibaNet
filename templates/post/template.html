@@ -4,7 +4,7 @@
 	<template id="post_template">
 
 		<!-- template content -->
-		<div class="mb-3 animated fadeIn shadow-sm">
+		<div class="mb-3 animated fadeIn">
 			<div>
 				<hr>
 				<h4><a id="title" href="/post/000000"></a></h4>
@@ -12,9 +12,9 @@
 				<div id="body"></div>
 
 				{% if "username" in session %}
-					<a class="badge badge-primary" href="#"><i class="fa fa-thumbs-up fa-lg"></i></a>
+					<a id="like" class="badge badge-primary" href="javascript:void(0);"><i class="fa fa-thumbs-up fa-lg"></i></a>
 						<span id="ratio" style="font-size: 13px;">100%</span>
-					<a class="badge badge-primary" href="#"><i class="fa fa-thumbs-down fa-lg"></i></a>
+					<a id="dislike" class="badge badge-primary" href="javascript:void(0);"><i class="fa fa-thumbs-down fa-lg"></i></a>
 
 					<a id="comment" class="badge badge-primary" href="/post/000000/comment"><i class="fa fa-comment fa-lg"></i></a>
 

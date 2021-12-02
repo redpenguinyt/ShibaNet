@@ -16,12 +16,9 @@ function loadItems() {
   fetch( url ).then((response) => {
     // Convert the response data to JSON
     response.json().then((data) => {
-	  console.log(data);
       // If empty JSON, exit the function
       if (!data.posts.length) {
-
-        // Replace the spinner with "No more posts"
-        sentinel.innerHTML = "No more posts";
+		sentinel.innerHTML = "No more posts";
         return;
       }
 
@@ -44,7 +41,7 @@ function loadItems() {
 			template_clone.querySelector("#ratio").innerHTML = `${post.ratio}%`;
 			template_clone.querySelector("#comment").href = `/post/${post._id}/comment`;
 			template_clone.querySelector("#edit").href = `/post/${post._id}/edit`;
-			template_clone.querySelector("#delete").href = `/post/${post._id}/edit`;
+			template_clone.querySelector("#delete").href = `/post/${post._id}/delete`;
 
 			if (data.username != post.author) { 
 				template_clone.querySelector("#modOptions").innerHTML = ""; 
@@ -72,4 +69,6 @@ var intersectionObserver = new IntersectionObserver(entries => {
 });
 
 // Instruct the IntersectionObserver to watch the sentinel
-intersectionObserver.observe(sentinel);
+if (sentinel) {
+	intersectionObserver.observe(sentinel);
+};
