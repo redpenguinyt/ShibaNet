@@ -89,13 +89,30 @@ def load():
 			following = mongo.db.users.find_one({"name": session["username"]})["following"]
 			following.append(session["username"])
 
-			mongo_result = mongo.db.posts.find({"timestamp":{"$lte": datetime.datetime.now()}, "author": {"$in": following}}, skip=counter, limit=quantity).sort('timestamp', DESCENDING)
+			mongo_result = mongo.db.posts.find(
+				{
+					"timestamp": {"$lte": datetime.datetime.now()},
+					"author": {"$in": following}
+				},
+				skip = counter, limit = quantity
+			).sort('timestamp', DESCENDING)
 		elif request.args["sort"] == "User" and "user" in request.args:
 			user = request.args["user"]
 
-			mongo_result = mongo.db.posts.find({"author":user}, skip=counter, limit=quantity).sort('timestamp', DESCENDING)
+			mongo_result = mongo.db.posts.find(
+				{
+					"timestamp": {"$lte": datetime.datetime.now()}, 
+					"author": user
+				},
+				skip = counter, limit = quantity
+			).sort('timestamp', DESCENDING)
 		else: # sort by All
-			mongo_result = mongo.db.posts.find({"timestamp":{"$lte": datetime.datetime.now()}}, skip=counter, limit=quantity).sort('timestamp', DESCENDING)
+			mongo_result = mongo.db.posts.find(
+				{
+					"timestamp": {"$lte": datetime.datetime.now()}
+				},
+				skip = counter, limit = quantity
+			).sort('timestamp', DESCENDING)
 
 		posts = []
 
@@ -109,6 +126,6 @@ def load():
 		username = session["username"] if "username" in session else ""
 		res = {"username":username, "posts":posts}
 	else:
-		return redirect(url_for("load",c=0,sort="All"))
+		return redirect(url_for("load", c=0, sort="All"))
 
 	return make_response(jsonify(res), 200)
