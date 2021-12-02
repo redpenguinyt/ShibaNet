@@ -392,7 +392,7 @@ def user_settings():
 @login_required
 def mark_all_read():
 	notifs.mark_read_all(session["username"])
-	return "success"
+	return "success", 200
 
 @app.route("/notification")
 @login_required
