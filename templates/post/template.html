@@ -1,0 +1,34 @@
+<div id="scroller" class="mb-3">
+
+	<!-- template schema, hidden from the dom -->
+	<template id="post_template">
+
+		<!-- template content -->
+		<div class="mb-3 animated fadeIn shadow-sm">
+			<div>
+				<hr>
+				<h4><a id="title" href="/post/000000"></a></h4>
+				<h6>Posted by <a id="author" href="/u/me"></a></h6>
+				<div id="body"></div>
+
+				{% if "username" in session %}
+					<a class="badge badge-primary" href="#"><i class="fa fa-thumbs-up fa-lg"></i></a>
+						<span id="ratio" style="font-size: 13px;">100%</span>
+					<a class="badge badge-primary" href="#"><i class="fa fa-thumbs-down fa-lg"></i></a>
+
+					<a id="comment" class="badge badge-primary" href="/post/000000/comment"><i class="fa fa-comment fa-lg"></i></a>
+
+					<span id="modOptions">
+						<a id="edit" class="badge badge-primary" href="/post/000000/edit"><i class="fa fa-edit fa-lg"></i></a>
+						<a id="delete" class="badge badge-primary" href="/post/000000/delete"><i class="fa fa-trash fa-lg"></i></a>
+					</span>
+				{% endif %}			
+			</div>
+		</div>
+	</template>
+</div>
+
+<!-- element to trigger the IntersectionObserver -->
+<div class="d-flex justify-content-center mb-3" id="sentinel">
+    <div class="spinner-border" role="status"></div>
+</div>

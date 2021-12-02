@@ -1,26 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 <title>Home - ShibaNet</title>
+<script>
+    var sortBy = '{{ request.args["sort"] }}';
+</script>
 
 <h6>Sort by: 
 	<a href="/?sort=Following">Following</a> 
 	<a href="/?sort=All">All</a> 
 </h6>
 
-{% for post in posts %}
-<hr>
-<h4><a href={{ url_for("view_post", post_id=post["_id"]) }}>{{ post["title"]|e|markdown }}</a></h4>
-<h6>Posted by <a href={{ url_for("view_user", username=post["author"]) }}>
-		{{ post["author"] }}
-	</a>
-</h6>
-
-<div class="{{ post['type'] }}_post">
-{{ post["body"] | e | truncate(200) | markdown }}
-</div>
-
-{% include 'post/buttons.html' %}
-
-{% endfor %}
+{% include 'post/cmt_buttons.html' %}
 
 {% endblock %}

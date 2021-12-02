@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <title>{{ user["name"] }} - ShibaNet</title>
+
+<script>
+    var sortBy = 'User';
+	var user = "{{ user['name'] }}";
+</script>
+
 <img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://i.imgur.com/WxNkK7J.png'" alt="" class="rounded" width="100px" height="100px">
 <h2>{{ user["name"] }}</h2>
 {{ user["bio"]|e|truncate(75)|markdown }}
@@ -30,21 +36,16 @@
 <div class="tab-content" id="myTabContent">
 	<div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
 		<br>
-		{% for post in user_posts %}
-		<h4><a href={{ url_for("view_post", post_id=post["_id"]) }}>{{ post["title"]|e|markdown }}</a></h4>
 
-		<div class="{{ post['type'] }}_post">
-			{{ post["body"] | e | truncate(200) | markdown }}
-		</div>
+		<h3>Posts by {{ user["name"] }}</h3>
 
-		{% include 'post/buttons.html' %}
-
-		<hr>
-		{% endfor %}
+		{% include 'post/template.html' %}
 	</div>
 	<div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
 		<br>
+
 		{% for cmt in user_comments %}
+
 		<h4><a href={{ url_for("view_comment", cmt_id=cmt["_id"]) }}>Replying to "{{ cmt|getparenttitle|truncate(20) }}"</a></h4>
 
 		<div class="text_post">

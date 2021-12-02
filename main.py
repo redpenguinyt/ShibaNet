@@ -19,16 +19,9 @@ def index():
 
 	if "sort" in request.args:
 		if request.args["sort"] == "All" or not "username" in session:
-			all_posts = mongo.db.posts.find({"timestamp":{"$lte": datetime.datetime.now()}}).sort('timestamp', flask_pymongo.DESCENDING)
-
-			return render_template("home.html", posts=all_posts, notifs=user_notifs)
+			return render_template("home.html", notifs=user_notifs)
 		elif request.args["sort"] == "Following":
-			following = mongo.db.users.find_one({"name": session["username"]})["following"]
-			following.append(session["username"])
-
-			recent_posts = mongo.db.posts.find({"timestamp":{"$lte": datetime.datetime.now()}, "author": {"$in": following}}).sort('timestamp', flask_pymongo.DESCENDING)
-
-			return render_template("home.html", posts=recent_posts, notifs=user_notifs)
+			return render_template("home.html", notifs=user_notifs)
 			
 	return redirect(url_for("index", sort="Following"))
 
@@ -86,7 +79,8 @@ def submit():
 			"author": session["username"],
 			"timestamp": datetime.datetime.now(),
 			"comments": [],
-			"type": request.args["type"]
+			"type": request.args["type"],
+			"score": {session["username"]:1}
 		})
 		
 		return redirect(url_for("view_post", post_id=post_id))
