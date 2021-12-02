@@ -1,7 +1,7 @@
 from flask import render_template, url_for, session, redirect, request
 import os, logging, datetime, flask_pymongo
-from utils.mongoutils import mongo, getparent
-from utils.flaskutils import app
+from utils.mongo import mongo, getparent
+from utils.flask import app
 from utils.authutils import login_required
 from utils import imgur, utils, notifs
 from utils import shortlinks
@@ -188,7 +188,8 @@ def comment(post_id):
 		"parent": {
 			"type": "post",
 			"id": post_id
-		}
+		},
+		"timestamp": datetime.datetime.now()
 	})
 	mongo.db.posts.find_one_and_update(
 		{ "_id": post_id }, 

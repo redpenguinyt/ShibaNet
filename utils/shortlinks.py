@@ -1,5 +1,5 @@
-from .flaskutils import app
-from .mongoutils import getparent
+from .flask import app
+from .mongo import getparent
 from flask import redirect, url_for, render_template
 
 @app.route("/u/<username>")

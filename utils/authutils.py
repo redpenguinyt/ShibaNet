@@ -2,8 +2,8 @@ from flask import request, render_template, redirect, url_for, session
 from functools import wraps
 from .email import confirmemail, iforgor
 from .utils import generate_id
-from .flaskutils import app
-from .mongoutils import mongo
+from .flask import app
+from .mongo import mongo
 import bcrypt, datetime
 
 # Auth
@@ -69,6 +69,7 @@ def register():
 					"email": request.form["email"],
 					"password": hashpass,
 					"key": confirm_key,
+					"timestamp": datetime.datetime.now(),
 					"type": "new"
 				}
 

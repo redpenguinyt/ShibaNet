@@ -1,4 +1,4 @@
-from .flaskutils import mongo
+from .flask import mongo
 
 def getparent(cmt_id):
 	comments = mongo.db.comments

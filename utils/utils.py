@@ -1,5 +1,5 @@
 import flask_pymongo, datetime, secrets
-from .mongoutils import mongo
+from .mongo import mongo
 
 def generate_id(length, collection=None):
 	new_id = secrets.token_hex(length)
