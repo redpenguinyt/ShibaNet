@@ -30,7 +30,7 @@ def search():
 	query = request.args["search"] if "search" in request.args else ""
 
 	found_posts = mongo.db.posts.find({ "$text": { "$search": query }}).sort('timestamp', DESCENDING)
-	found_users = mongo.db.users.find({ "$text": { "$search": query }})
+	found_users = mongo.db.users.find({ "$text": { "$search": query }}, projection={"password": False,"_id": False, "email": False})
 	
 	return render_template(
 		"search.html",
@@ -325,7 +325,7 @@ def view_user(username):
 			return redirect(url_for("view_user", username=session["username"]))
 
 	users = mongo.db.users
-	user = users.find_one({"name": username})
+	user = users.find_one({"name": username}, projection={"password": False,"_id": False, "email": False})
 	if not user:
 		return render_template("message.html",title="404",body="That user doesn't exist", notifs=user_notifs), 404
 

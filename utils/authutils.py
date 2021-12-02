@@ -108,7 +108,7 @@ def confirm():
 					"password": tmp_user["password"],
 					"following": ["ShibaNet_Official"],
 					"bio": "",
-					"pfp": "",
+					"pfp": f"https://avatars.dicebear.com/api/jdenticon/{tmp_user['name']}.svg",
 					"theme":"amethyst"
 				}
 			)

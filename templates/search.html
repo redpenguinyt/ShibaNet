@@ -1,14 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
+<title>Search - ShibaNet</title>
 
-<h2>Found posts</h2>
-{% for post in posts %}
-{{ post }}<br><br>
-{% endfor %}
+<h2>Search result for "{{ request.args["search"] }}"</h2><br>
 
-<h2>Found users</h2>
-{% for user in users %}
-{{ user }}<br><br>
-{% endfor %}
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+	<li class="nav-item" role="presentation">
+		<button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab" aria-controls="posts" aria-selected="true">Posts</button>
+	</li>
+  	<li class="nav-item" role="presentation">
+    	<button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">Users</button>
+  	</li>
+  	<li class="nav-item" role="presentation">
+    	<button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab" aria-controls="categories" aria-selected="false">Categories</button>
+  	</li>
+</ul>
+<br>
+<div class="tab-content" id="myTabContent">
+	<div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+		<h2>Found posts</h2>
+		{% for post in posts %}
+		{{ post }}<br><br>
+		{% endfor %}
+	</div>
+	<div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+		<h2>Found users</h2>
+		{% for user in users %}
+		{{ user }}<br><br>
+		{% endfor %}
+	</div>
+	<div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+		Categories coming soon!
+	</div>
+</div>
 
 {% endblock %}

@@ -94,8 +94,9 @@ def load():
 					"timestamp": {"$lte": datetime.datetime.now()},
 					"author": {"$in": following}
 				},
-				skip = counter, limit = quantity
-			).sort('timestamp', DESCENDING)
+				skip = counter, limit = quantity,
+				sort = [('timestamp', DESCENDING)]
+			)
 		elif request.args["sort"] == "User" and "user" in request.args:
 			user = request.args["user"]
 
@@ -104,15 +105,17 @@ def load():
 					"timestamp": {"$lte": datetime.datetime.now()}, 
 					"author": user
 				},
-				skip = counter, limit = quantity
-			).sort('timestamp', DESCENDING)
+				skip = counter, limit = quantity,
+				sort = [('timestamp', DESCENDING)]
+			)
 		else: # sort by All
 			mongo_result = mongo.db.posts.find(
 				{
 					"timestamp": {"$lte": datetime.datetime.now()}
 				},
-				skip = counter, limit = quantity
-			).sort('timestamp', DESCENDING)
+				skip = counter, limit = quantity,
+				sort = [('timestamp', DESCENDING)]
+			)
 
 		posts = []
 
