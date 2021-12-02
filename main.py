@@ -1,7 +1,7 @@
 from flask import render_template, url_for, session, redirect, request
 import os, logging, datetime, flask_pymongo
 from utils.mongo import mongo, getparent
-from utils.flask import app
+from utils.flask import app, DESCENDING
 from utils.authutils import login_required
 from utils import imgur, utils, notifs
 from utils import shortlinks
@@ -9,7 +9,7 @@ from utils import shortlinks
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-# Home
+# Main
 
 @app.route("/")
 def index():
@@ -24,6 +24,19 @@ def index():
 			return render_template("home.html", notifs=user_notifs)
 			
 	return redirect(url_for("index", sort="Following"))
+
+@app.route("/search")
+def search():
+	query = request.args["search"] if "search" in request.args else ""
+
+	found_posts = mongo.db.posts.find({ "$text": { "$search": query }}).sort('timestamp', DESCENDING)
+	found_users = mongo.db.users.find({ "$text": { "$search": query }})
+	
+	return render_template(
+		"search.html",
+		posts = found_posts,
+		users = found_users
+	)
 
 # Posts
 

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Found posts</h2>
+{% for post in posts %}
+{{ post }}<br><br>
+{% endfor %}
+
+<h2>Found users</h2>
+{% for user in users %}
+{{ user }}<br><br>
+{% endfor %}
+
+{% endblock %}

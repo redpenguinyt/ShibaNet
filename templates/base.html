@@ -52,6 +52,10 @@
 							</ul>
 						</li>
 						{% endif %}
+						<form class="d-flex" action="{{ url_for('search', search="") }}" method="GET">
+							<input name="search" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{{ request.args['search'] }}" required>
+							<button class="btn btn-primary" type="submit">Search</button>
+						</form>
 					</ul>
 					<ul class="navbar-nav ml-auto">
 						{% if "username" in session %}
