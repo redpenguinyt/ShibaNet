@@ -77,7 +77,7 @@ def test():
 def load():
 	""" Route to return the posts """
 
-	quantity = 5
+	quantity = 10
 
 	if "c" in request.args and "sort" in request.args:
 		counter = int(request.args.get("c"))
