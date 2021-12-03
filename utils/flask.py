@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, redirect, url_for, request, make_response, jsonify, escape
-from flask_misaka import Misaka, markdown
+from flask_misaka import Misaka
 from flask_pymongo import PyMongo, DESCENDING
 import datetime, os
 
@@ -7,7 +7,7 @@ app = Flask('ShibaNet')
 app.config["MONGO_URI"] = os.environ["MONGO_URI"]
 app.secret_key = os.environ["secret_key"]
 
-Misaka(app)
+md = Misaka(app, autolink=True, underline=True, no_intra_emphasis=True, smartypants=True, tables=True, no_html=True, space_headers=True, superscript=True)
 mongo = PyMongo(app)
 
 def truncate(data, amount):
@@ -143,9 +143,9 @@ def load():
 		posts = []
 
 		for post in mongo_result:
-			post["title"] = markdown(mentions(escape(post["title"])))
+			post["title"] = md.render(mentions(escape(post["title"])))
 			post["ratio"] = getratio(post["score"])
-			post["body"] = markdown(mentions(truncate(escape(post["body"]), 200)))
+			post["body"] = md.render(mentions(truncate(escape(post["body"]), 200)))
 			post["myRatio"] = 0
 			if "username" in session:
 				if session["username"] in post["score"]:

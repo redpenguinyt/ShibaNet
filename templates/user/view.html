@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <title>{{ user["name"] }} - ShibaNet</title>
+<meta name="description" content="{{ user['bio']|e }}">
 
 <script>
     var sortBy = 'User';
@@ -32,17 +33,15 @@
   	<li class="nav-item" role="presentation">
     	<button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="false">About</button>
   	</li>
-</ul>
+</ul><br>
 <div class="tab-content" id="myTabContent">
 	<div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
-		<br>
-
 		<h3>Posts by {{ user["name"] }}</h3>
 
 		{% include 'post/template.html' %}
 	</div>
 	<div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
-		<br>
+		<h3>Comments by {{ user["name"] }}</h3>
 
 		{% for cmt in user_comments %}
 
@@ -58,7 +57,7 @@
 		{% endfor %}
 	</div>
 	<div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
-		<br>
+		<h3>About</h3>
 		{{ user["bio"]|e|markdown }}
 	</div>
 </div>
