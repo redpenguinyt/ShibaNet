@@ -83,13 +83,23 @@ def register():
 				tmp_users.delete_many({'email': request.form["email"]})
 				tmp_users.insert_one(new_tmp_user)
 
-				return render_template("message.html",title="Confirm email address", body=f"Check your email ({request.form['email']})")
+				return render_template("message.html",title="Confirm email address", body=f"Check your email ({request.form['email']})", btnurl=url_for("resend_email",email=request.form['email']), btntag="Resend email")
 			else:
 				return render_template("auth/register.html", hidenav=True, error="Email is already in use")
 		else:
 			return render_template("auth/register.html", hidenav=True, error="Username is already in use")
 
 	return render_template("auth/register.html", hidenav=True)
+
+@app.route("/resend/<email>/")
+def resend_email(email):
+	user = mongo.db.tmp_users.find_one({"email": email})
+	e_result = confirmemail(user, user["key"])
+
+	if e_result == "error":
+		return render_template("auth/register.html", hidenav=True, error="That email could not be used")
+	
+	return render_template("message.html",title="Resent email address", body=f"Check your email ({user['email']})", btnurl=url_for("resend_email",email=user['email']), btntag="Resend email")
 
 @app.route("/confirm/new/")
 def confirm():
