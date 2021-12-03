@@ -3,15 +3,15 @@
 <title>{{ post["title"] }} - ShibaNet</title>
 <meta name="author" content="{{ post['author'] }}">
 
-<h2>{{ post["title"]|e|markdown }}</h2>
+<h2>{{ post["title"]|e|mentions|markdown }}</h2>
 <p style="font-size: 30px;">
 	Posted by <a href='{{ url_for("view_user", username=post["author"]) }}'>
-		<img src="{{ authorpfp }}" onerror="this.onerror=null; this.src='https://i.imgur.com/WxNkK7J.png'" alt="User's pfp" class="rounded" width="30px" height="30px">{{ post["author"] }}
+		<img src="{{ authorpfp }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ post['author'] }}.svg'" alt="User's pfp" class="rounded" width="30px" height="30px">{{ post["author"] }}
 	</a>
 </p>
 
 <div class="{{ post['type'] }}_post">
-	{{ post["body"]|e|markdown }}
+	{{ post["body"]|e|mentions|markdown }}
 </div>
 
 {% include 'post/buttons.html' %}

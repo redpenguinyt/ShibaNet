@@ -38,6 +38,9 @@ hr {
 	max-width: 65%;
 }
 .fa-thumbs-up, .fa-thumbs-down, .fa-comment, .fa-edit, .fa-trash {
+	color: rgb(145, 146, 153);
+}
+a.ratio-clicked > i {
 	color: rgb(51, 71, 255);
 }
 .nav-link {

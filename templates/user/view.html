@@ -7,7 +7,7 @@
 	var user = "{{ user['name'] }}";
 </script>
 
-<img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://i.imgur.com/WxNkK7J.png'" alt="" class="rounded" width="100px" height="100px">
+<img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ user['name'] }}.svg'" alt="" class="rounded" width="100px" height="100px">
 <h2>{{ user["name"] }}</h2>
 {{ user["bio"]|e|truncate(75)|markdown }}
 <div class="followButton">

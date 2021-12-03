@@ -10,10 +10,10 @@
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-		<script type="text/javascript" src="/static/js/index.js"></script>
 		<script type="text/javascript" src="/static/js/lazyload.js" defer></script>
+		<script type="text/javascript" src="/static/js/index.js"></script>
 
-		<link rel="canonical" href="https://shibanet.repl.co"/>
+		<link rel="canonical" href="{{ request.url }}"/>
 		<link rel="manifest" href="/static/manifest.json">
 		<meta name="description" content="Sign up and share with people who have similar interests today :D">
 		<meta charset="utf-8">
@@ -43,22 +43,23 @@
 						<li class="nav-item">
 							<a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a>
 						</li>
+						{% endif %}
+						<form class="d-flex" action="{{ url_for('search') }}" method="GET">
+							<input name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{{ request.args['q'] }}" required>
+							<button class="btn btn-primary" type="submit" autocomplete="off">Search</button>
+						</form>
+					</ul>
+					<ul class="navbar-nav ml-auto">
+						{% if "username" in session %}
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ session["username"] }}</a>
 							<ul class="dropdown-menu bg-dark" aria-labelledby="navbarDropdownMenuLink">
 								<li><a class="nav-link" href={{ url_for("view_user",username="me") }}><i class="fa fa-user fa-lg" aria-hidden="true"></i> Profile</a></li>
 								<li><a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a></li>
 								<li><a class="nav-link" href={{ url_for("user_settings") }}><i class="fa fa-cog fa-lg" aria-hidden="true"></i> Settings</a></li>
+								<li><a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')"><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Logout</a></li>
 							</ul>
 						</li>
-						{% endif %}
-						<form class="d-flex" action="{{ url_for('search', search="") }}" method="GET">
-							<input name="search" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{{ request.args['search'] }}" required>
-							<button class="btn btn-primary" type="submit">Search</button>
-						</form>
-					</ul>
-					<ul class="navbar-nav ml-auto">
-						{% if "username" in session %}
 						<li class="nav-item">
 							<a class="nav-link" data-bs-toggle="offcanvas" href="#notifications" role="button" aria-controls="notifications">
 								<span class="position-relative">
@@ -67,16 +68,11 @@
 								</span>
 							</a>
 						</li>
-						{% endif %}
-						
-						<li class="nav-item">
-						{% if "username" in session %}
-						<a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')">Logout <i class="fa fa-sign-out fa-lg" aria-hidden="true"></i></a>
 						{% else %}
-						<a class="nav-link" href={{ url_for("login") }}>Login</a>
-						{% endif %}
+						<li clas="nav-item">
+							<a class="nav-link" href={{ url_for("login") }}>Login</a>
 						</li>
-      				</span>
+						{% endif %}
 					</ul>
 				</div>
 			  </div>
@@ -92,7 +88,7 @@
 			<div class="offcanvas-header">
 				<h5 id="notificationsLabel">Notifications</h5>
 				<a href="javascript:void(0);" id="markread" class='btn {% if notifs %}btn-primary {% else %} btn-secondary disabled{% endif %}'>Mark All Read</a>
-    			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    			<button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 			</div>
 			<div class="offcanvas-body">
 				<div id="all_notifs">

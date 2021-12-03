@@ -31,8 +31,20 @@ def getratio(score):
 	for key, item in score.items():
 		if int(item) > 0: ratio += 1
 	
-	return (ratio/len(score))*100 if len(score) > 0 else 100
+	return int((ratio/len(score))*100 if len(score) > 0 else 100)
 
+@app.template_filter()
+def mentions(text):
+	result = []
+	for word in text.split(" "):
+		if word.startswith("@"):
+			username = word.replace("@","")
+			if mongo.db.users.find_one({"name": username}):
+				result.append(f"[{word}](/u/{username})")
+				continue
+		result.append(word)
+	return " ".join(result)
+	
 @app.template_filter()
 def pretty_time(time_delta):
 	result = time_delta.strftime("%A %-d{0} %B %Y at %H:%M")
@@ -108,6 +120,17 @@ def load():
 				skip = counter, limit = quantity,
 				sort = [('timestamp', DESCENDING)]
 			)
+		elif request.args["sort"] == "searchPosts" and "search" in request.args:
+			query = request.args["search"]
+
+			mongo_result = mongo.db.posts.find(
+				{
+					"timestamp": {"$lte": datetime.datetime.now()}, 
+					"$text": {"$search": query}
+				},
+				skip = counter, limit = quantity,
+				sort = [("timestamp", DESCENDING)]
+			)
 		else: # sort by All
 			mongo_result = mongo.db.posts.find(
 				{
@@ -120,9 +143,13 @@ def load():
 		posts = []
 
 		for post in mongo_result:
-			post["title"] = markdown(escape(post["title"]))
+			post["title"] = markdown(mentions(escape(post["title"])))
 			post["ratio"] = getratio(post["score"])
-			post["body"] = markdown(truncate(escape(post["body"]), 200))
+			post["body"] = markdown(mentions(truncate(escape(post["body"]), 200)))
+			post["myRatio"] = 0
+			if "username" in session:
+				if session["username"] in post["score"]:
+					post["myRatio"] = post["score"][session["username"]]
 			
 			posts.append(post)
 

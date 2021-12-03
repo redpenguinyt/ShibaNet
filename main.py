@@ -1,7 +1,7 @@
-from flask import render_template, url_for, session, redirect, request
+from flask import render_template, url_for, session, redirect, request, make_response, jsonify
 import os, logging, datetime, flask_pymongo
 from utils.mongo import mongo, getparent
-from utils.flask import app, DESCENDING
+from utils.flask import app, getratio
 from utils.authutils import login_required
 from utils import imgur, utils, notifs
 from utils import shortlinks
@@ -27,15 +27,16 @@ def index():
 
 @app.route("/search")
 def search():
-	query = request.args["search"] if "search" in request.args else ""
+	query = request.args["q"] if "q" in request.args else ""
+	# Regex backup method: {"$or": [{"name": {"$regex": query, "$options": 'i'}},{"bio": {"$regex": query, "$options": 'i'}}]}
+	found_users = mongo.db.users.find({"$text": { "$search": query }}, projection = {"password": False,"_id": False, "email": False})
 
-	found_posts = mongo.db.posts.find({ "$text": { "$search": query }}).sort('timestamp', DESCENDING)
-	found_users = mongo.db.users.find({ "$text": { "$search": query }}, projection={"password": False,"_id": False, "email": False})
+	found_categories = mongo.db.categories.find({"$text": {"$search": query}})
 	
 	return render_template(
 		"search.html",
-		posts = found_posts,
-		users = found_users
+		users = found_users,
+		categories = found_categories
 	)
 
 # Posts
@@ -65,7 +66,6 @@ def submit():
 				return render_template("post/submit.html", error="All fields must be filled", notifs=user_notifs)
 			
 			content = request.form["body"]
-			
 		elif request.args["type"] == "image":
 			f = request.files['image']
 
@@ -93,10 +93,19 @@ def submit():
 			"timestamp": datetime.datetime.now(),
 			"comments": [],
 			"type": request.args["type"],
-			"score": {session["username"]:1}
+			"score": {session["username"]: 1}
 		})
+		mentions = []
+		for word in f"{request.form['title']} {content}".split(" "):
+			if word.startswith("@"):
+				username = word.replace("@","")
+				if mongo.db.users.find_one({"name": username}) and username not in mentions:
+						mentions.append(username)
+		for username in mentions:
+			notifs.call(username, f"[{session['username']}](/u/{session['username']}) mentioned you in a post!", request.form["title"], url_for("view_post", post_id=post_id))
 		
 		return redirect(url_for("view_post", post_id=post_id))
+
 	return render_template("post/submit.html", error="Something went wrong :(")
 
 @app.route("/post/<post_id>", methods=["GET"])
@@ -106,8 +115,6 @@ def view_post(post_id):
 	user_notifs = []
 	if "username" in session:
 		user_notifs = notifs.get_notifs(session["username"])
-		if "like" in request.args:
-			utils.like(post, session["username"])
 	
 	if not post:
 		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
@@ -312,6 +319,44 @@ def delete_comment(cmt_id):
 		return render_template("message.html",title="Cannot delete",body="You can't delete that!", notifs=user_notifs), 403
 	
 	return redirect(url_for("view_post",post_id=getparent(cmt_id)["_id"]))
+
+@app.route('/<post_id>/like')
+@login_required
+def like(post_id):
+	username = session["username"]
+	score = mongo.db.posts.find_one({"_id": post_id})["score"]
+
+	if username in score and score[username] == 1:
+		mongo.db.posts.find_one_and_update(
+			{ "_id": post_id }, 
+			{"$unset": {f"score.{username}": 1}}
+		)
+	else:
+		mongo.db.posts.find_one_and_update(
+				{ "_id": post_id },
+				{"$set": {f"score.{username}": 1}}
+			)
+	res = getratio(mongo.db.posts.find_one({"_id": post_id})["score"])
+	return make_response(jsonify(res), 200)
+
+@app.route('/<post_id>/dislike')
+@login_required
+def dislike(post_id):
+	username = session["username"]
+	score = mongo.db.posts.find_one({"_id": post_id})["score"]
+
+	if username in score and score[username] == -1:
+		mongo.db.posts.find_one_and_update(
+			{ "_id": post_id }, 
+			{"$unset": {f"score.{username}": -1}}
+		)
+	else:
+		mongo.db.posts.find_one_and_update(
+				{ "_id": post_id },
+				{"$set": {f"score.{username}": -1}}
+			)
+	res = getratio(mongo.db.posts.find_one({"_id": post_id})["score"])
+	return make_response(jsonify(res), 200)
 
 # User
 

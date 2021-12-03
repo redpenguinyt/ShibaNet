@@ -1,24 +1,24 @@
 {% if "username" in session %}
 
 {# Score #}
+<span id="{{ post['_id'] }}">
+	<a id="like" class="badge badge-primary {{ 'ratio-clicked' if post['score'][session['username']] == 1 }}" href="javascript:void(0);"><i class="fa fa-thumbs-up fa-lg"></i></a>
+	<span id="ratio" style="font-size: 13px;">{{ post["score"]|getratio }}%</span>
+	<a id="dislike" class="badge badge-primary {{ 'ratio-clicked' if post['score'][session['username']] == -1 }}" href="javascript:void(0);"><i class="fa fa-thumbs-down fa-lg"></i></a>
 
-<a id="like" class="badge badge-primary" href="javascript:void(0);"><i class="fa fa-thumbs-up fa-lg"></i></a>
-	<span id="ratio" style="font-size: 13px;">100%{{ post["ratio"] }}</span>
-<a id="dislike" class="badge badge-primary" href="javascript:void(0);"><i class="fa fa-thumbs-down fa-lg"></i></a>
+	{# Comment #}
 
-{# Comment #}
+	<a class="badge badge-primary" href="{{ url_for('comment',post_id=post['_id']) }}"><i class="fa fa-comment fa-lg"></i></a>
 
-<a class="badge badge-primary" href="{{ url_for('comment',post_id=post['_id']) }}"><i class="fa fa-comment fa-lg"></i></a>
+	{# Moderation #}
 
-{# Moderation #}
-
-{% if session["username"] == post["author"] or session["username"]|is_mod %}
-<span id="modOptions">
+	{% if session["username"] == post["author"] or session["username"]|is_mod %}
+	<span id="modOptions">
 	{% if post["type"] == "text" %}
 		<a id="edit" class="badge badge-primary" href="{{ url_for('edit_post',post_id=post['_id']) }}"><i class="fa fa-edit fa-lg"></i></a>
 	{% endif %}
-	<a id="delete" class="badge badge-primary" href="{{ url_for('delete_post',post_id=post['_id']) }}"><i class="fa fa-trash fa-lg"></i></a>
+		<a id="delete" class="badge badge-primary" href="{{ url_for('delete_post',post_id=post['_id']) }}"><i class="fa fa-trash fa-lg"></i></a>
+	</span>
+	{% endif %}
 </span>
-{% endif %}
-
 {% endif %}

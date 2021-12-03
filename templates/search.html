@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <title>Search - ShibaNet</title>
+<script>
+    var sortBy = 'searchPosts';
+	var search = '{{ request.args["q"] }}';
+</script>
 
-<h2>Search result for "{{ request.args["search"] }}"</h2><br>
+<h2>Search result for "{{ request.args["q"] }}"</h2><br>
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
 	<li class="nav-item" role="presentation">
@@ -19,18 +23,26 @@
 <div class="tab-content" id="myTabContent">
 	<div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
 		<h2>Found posts</h2>
-		{% for post in posts %}
-		{{ post }}<br><br>
-		{% endfor %}
+		
+		{% include 'post/template.html' %}
 	</div>
 	<div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
 		<h2>Found users</h2>
 		{% for user in users %}
-		{{ user }}<br><br>
+		<hr>
+		<h3>
+			<a href='{{ url_for("view_user", username=user["name"]) }}'>
+				<img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ user['name'] }}.svg'" alt="User's pfp" class="rounded" width="30px" height="30px">{{ user["name"] }}
+			</a>
+		</h3>
+		<p>{{ user["bio"]|e|truncate(75)|markdown }}</p>
 		{% endfor %}
 	</div>
 	<div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
-		Categories coming soon!
+		<h2>Found posts</h2>
+		{% for category in categories %}
+			{{ category }}
+		{% endfor %}
 	</div>
 </div>
 
