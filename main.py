@@ -222,6 +222,15 @@ def comment(post_id):
 			request.form["body"],
 			url_for("view_post", post_id=post_id)
 		)
+	mentions = []
+	for word in request.form['body'].split(" "):
+		if word.startswith("@"):
+			username = word.replace("@","")
+			if mongo.db.users.find_one({"name": username}) and username not in mentions:
+					mentions.append(username)
+	for username in mentions:
+		notifs.call(username, f"[{session['username']}](/u/{session['username']}) mentioned you in a comment!", request.form["body"], url_for("view_post", post_id=post_id))
+	
 	return redirect(url_for("view_post", post_id=post_id))
 
 @app.route("/post/<post_id>/comment/<parent_cmt_id>", methods=["POST","GET"])
@@ -265,6 +274,15 @@ def subcomment(post_id, parent_cmt_id):
 			request.form["body"],
 			url_for("view_post", post_id=post_id)
 		)
+	mentions = []
+	for word in request.form['body'].split(" "):
+		if word.startswith("@"):
+			username = word.replace("@","")
+			if mongo.db.users.find_one({"name": username}) and username not in mentions:
+					mentions.append(username)
+	for username in mentions:
+		notifs.call(username, f"[{session['username']}](/u/{session['username']}) mentioned you in a comment!", request.form["body"], url_for("view_post", post_id=post_id))
+		
 	return redirect(url_for("view_post", post_id=post_id))
 
 @app.route("/comment/<cmt_id>/edit", methods=["POST","GET"])
