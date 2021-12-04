@@ -28,8 +28,7 @@ def index():
 @app.route("/search")
 def search():
 	query = request.args["q"] if "q" in request.args else ""
-	# Regex backup method: {"$or": [{"name": {"$regex": query, "$options": 'i'}},{"bio": {"$regex": query, "$options": 'i'}}]}
-	found_users = mongo.db.users.find({"$text": { "$search": query }}, projection = {"password": False,"_id": False, "email": False})
+	found_users = mongo.db.users.find({"$or": [{"name": {"$regex": query, "$options": 'i'}},{"bio": {"$regex": query, "$options": 'i'}}]}, projection = {"password": False,"_id": False, "email": False})
 
 	found_categories = mongo.db.categories.find({"$text": {"$search": query}})
 	
@@ -119,13 +118,9 @@ def view_post(post_id):
 	if not post:
 		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
 
-	authorpfp = mongo.db.users.find_one(
-		{"name": post["author"]}
-	)["pfp"]
-
 	comments = utils.getcomments(post["comments"])
 
-	return render_template("post/view.html", post=post, authorpfp=authorpfp, comments=comments, notifs=user_notifs)
+	return render_template("post/view.html", post=post, comments=comments, notifs=user_notifs)
 
 @app.route("/post/<post_id>/edit", methods=["POST","GET"])
 @login_required

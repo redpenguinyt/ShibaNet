@@ -74,6 +74,10 @@ def getparenttitle(comment):
 		if parent_cmt: return parent_cmt["body"]
 	return "{deleted}"
 
+@app.template_filter()
+def pfp(username):
+	return mongo.db.users.find_one({"name": username})["pfp"]
+
 @app.route("/test")
 def test():
 	if not "username" in session:

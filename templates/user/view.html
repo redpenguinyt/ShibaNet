@@ -10,8 +10,7 @@
 
 <img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ user['name'] }}.svg'" alt="" class="rounded" width="100px" height="100px">
 <h2>{{ user["name"] }}</h2>
-{{ user["bio"]|e|truncate(75)|markdown }}
-<div class="followButton">
+<div class="pull-right">
 	{% if friends %}
 	You are friends
 	{% endif %}
@@ -22,6 +21,7 @@
 	<a href="{{ url_for('user_settings') }}">Settings</a>
 	{% endif %}
 </div>
+{{ user["bio"]|e|truncate(75)|markdown }}
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
 	<li class="nav-item" role="presentation">

@@ -17,9 +17,10 @@ text-align:centre;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-.followButton {
-	text-align: right;
-	padding-right: 15px;
+@media only screen and (max-width: 800px) and (min-width: 576px) {
+	.nav-text {
+		display: none;
+	}
 }
 .btn {
 	border: none;
@@ -36,6 +37,11 @@ hr {
 }
 .image_post * img, .text_post * img {
 	max-width: 65%;
+}
+
+.navbar-img {
+	width: 1.5em;
+	height: 1.5em;
 }
 .fa-thumbs-up, .fa-thumbs-down, .fa-comment, .fa-edit, .fa-trash {
 	color: rgb(145, 146, 153);

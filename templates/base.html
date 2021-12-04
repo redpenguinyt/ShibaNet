@@ -28,56 +28,59 @@
 
 {% if not hidenav %}
 		<header>
-			<nav class="navbar navbar-expand-md navbar-dark bg-dark">
-			  <div class="container-fluid">
-				<a class="navbar-brand" href="/">ShibaNet</a>
+			<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+				<div class="container-fluid">
+					<a class="navbar-brand" href="/">ShibaNet</a>
 
-
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav me-auto mb-lg-0">
-						<li class="nav-item">
-							<a class="nav-link" href="/"><i class="fa fa-home fa-lg" aria-hidden="true"></i> Home</a>
-						</li>
-						{% if "username" in session %}
-						<li class="nav-item">
-							<a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a>
-						</li>
-						{% endif %}
-						<form class="d-flex" action="{{ url_for('search') }}" method="GET">
-							<input name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{{ request.args['q'] }}" required>
-							<button class="btn btn-primary" type="submit" autocomplete="off">Search</button>
-						</form>
-					</ul>
-					<ul class="navbar-nav ml-auto">
-						{% if "username" in session %}
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ session["username"] }}</a>
-							<ul class="dropdown-menu bg-dark" aria-labelledby="navbarDropdownMenuLink">
-								<li><a class="nav-link" href={{ url_for("view_user",username="me") }}><i class="fa fa-user fa-lg" aria-hidden="true"></i> Profile</a></li>
-								<li><a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a></li>
-								<li><a class="nav-link" href={{ url_for("user_settings") }}><i class="fa fa-cog fa-lg" aria-hidden="true"></i> Settings</a></li>
-								<li><a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')"><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Logout</a></li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" data-bs-toggle="offcanvas" href="#notifications" role="button" aria-controls="notifications">
-								<span class="position-relative">
-									<i class="fa fa-bell fa-lg"></i>
-									<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif_badge">{{ notifs|count if notifs|count > 0 else ""}}</span>
-								</span>
-							</a>
-						</li>
-						{% else %}
-						<li clas="nav-item">
-							<a class="nav-link" href={{ url_for("login") }}>Login</a>
-						</li>
-						{% endif %}
-					</ul>
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						<ul class="navbar-nav me-auto mb-lg-0">
+							<li class="nav-item">
+								<a class="nav-link" href="/"><i class="fa fa-home fa-lg" aria-hidden="true"></i><span class="nav-text"> Home</span></a>
+							</li>
+							{% if "username" in session %}
+							<li class="nav-item">
+								<a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i><span class="nav-text"> Post</span></a>
+							</li>
+							{% endif %}
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-search fa-lg" aria-hidden="true"></i><span class="nav-text"> Search</span></a>
+								<ul class="dropdown-menu bg-dark" aria-labelledby="navbarDropdownMenuLink">
+									<form class="navbar-form d-flex" action="{{ url_for('search') }}" method="GET">
+										<input name="q" class="form-control" type="search" placeholder="Search..." aria-label="Search..." value="{{ request.args['q'] }}" autocomplete="off" required>
+									</form>
+								</ul>
+							</li>
+						</ul>
+						<ul class="navbar-nav ml-auto">
+							{% if "username" in session %}
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"><img class="rounded navbar-img" src="{{ session['username']|pfp }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ session['username'] }}.svg'" alt="User's pfp"><span class="nav-text"> {{ session["username"] }}</span></a>
+								<ul class="dropdown-menu pull-left bg-dark" aria-labelledby="navbarDropdownMenuLink">
+									<li><a class="nav-link" href={{ url_for("view_user",username="me") }}><i class="fa fa-user fa-lg" aria-hidden="true"></i> Profile</a></li>
+									<li><a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a></li>
+									<li><a class="nav-link" href={{ url_for("user_settings") }}><i class="fa fa-cog fa-lg" aria-hidden="true"></i> Settings</a></li>
+									<li><a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')"><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Logout</a></li>
+								</ul>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-bs-toggle="offcanvas" href="#notifications" role="button" aria-controls="notifications">
+									<span class="position-relative">
+										<i class="fa fa-bell fa-lg"></i>
+										<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif_badge">{{ notifs|count if notifs|count > 0 else ""}}</span>
+									</span>
+								</a>
+							</li>
+							{% else %}
+							<li clas="nav-item">
+								<a class="nav-link" href={{ url_for("login") }}>Login</a>
+							</li>
+							{% endif %}
+						</ul>
+					</div>
 				</div>
-			  </div>
 			</nav>
 		</header>
 {% endif %}
