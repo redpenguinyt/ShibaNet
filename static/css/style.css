@@ -21,6 +21,13 @@ text-align:centre;
 	.nav-text {
 		display: none;
 	}
+	.right-align-profile {
+		position: absolute;
+		transform: translate3d(-120px, 0px, 0px);
+		top: 0px;
+		left: 0px;
+		will-change: transform;
+	}
 }
 .btn {
 	border: none;

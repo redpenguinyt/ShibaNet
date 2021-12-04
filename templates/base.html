@@ -58,10 +58,11 @@
 							{% if "username" in session %}
 							<li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"><img class="rounded navbar-img" src="{{ session['username']|pfp }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ session['username'] }}.svg'" alt="User's pfp"><span class="nav-text"> {{ session["username"] }}</span></a>
-								<ul class="dropdown-menu pull-left bg-dark" aria-labelledby="navbarDropdownMenuLink">
+								<ul class="dropdown-menu dropdown-menu-right right-align-profile bg-dark" aria-labelledby="navbarDropdownMenuLink">
 									<li><a class="nav-link" href={{ url_for("view_user",username="me") }}><i class="fa fa-user fa-lg" aria-hidden="true"></i> Profile</a></li>
 									<li><a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a></li>
 									<li><a class="nav-link" href={{ url_for("user_settings") }}><i class="fa fa-cog fa-lg" aria-hidden="true"></i> Settings</a></li>
+									<div class="dropdown-divider"></div>
 									<li><a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')"><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Logout</a></li>
 								</ul>
 							</li>
