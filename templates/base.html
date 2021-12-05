@@ -17,8 +17,8 @@
 		<link rel="manifest" href="/static/manifest.json">
 		<meta name="description" content="Sign up and share with people who have similar interests today :D">
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=no">
-		<meta name="keywords" content="ShibaNet, Social, network, social network, shibanet">
+		<meta name="viewport" content="width=device-width user-scalable=no">
+		<meta name="keywords" content="social, network, shibanet, red penguin">
 	</head>
 {% if "theme" in session %}
 	<body class="{{ session['theme'] }}_theme">
@@ -36,56 +36,49 @@
 					<span class="navbar-toggler-icon"></span>
 					</button>
 					<div class="collapse navbar-collapse" id="navbarSupportedContent">
-						<ul class="navbar-nav me-auto mb-lg-0">
-							<li class="nav-item">
-								<a class="nav-link" href="/"><i class="fa fa-home fa-lg" aria-hidden="true"></i><span class="nav-text"> Home</span></a>
-							</li>
+						<div class="navbar-nav me-auto mb-lg-0">
+							<a class="nav-item nav-link" href="/"><i class="fa fa-home fa-lg" aria-hidden="true"></i><span class="nav-text"> Home</span></a>
 							{% if "username" in session %}
-							<li class="nav-item">
-								<a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i><span class="nav-text"> Post</span></a>
-							</li>
+							<a class="nav-item nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i><span class="nav-text"> Post</span></a>
 							{% endif %}
-							<li class="nav-item dropdown">
+							<div class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-search fa-lg" aria-hidden="true"></i><span class="nav-text"> Search</span></a>
-								<ul class="dropdown-menu bg-dark" aria-labelledby="navbarDropdownMenuLink">
+								<div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdownMenuLink">
 									<form class="navbar-form d-flex" action="{{ url_for('search') }}" method="GET">
 										<input name="q" class="form-control" type="search" placeholder="Search..." aria-label="Search..." value="{{ request.args['q'] }}" autocomplete="off" required>
 									</form>
-								</ul>
-							</li>
-						</ul>
-						<ul class="navbar-nav ml-auto">
-							<li class="nav-item dropdown">
+								</div>
+							</div>
+						</div>
+						<div class="navbar-nav ml-auto">
+							<div class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-flask fa-lg" aria-hidden="true"></i><span class="nav-text"> Experiments</span></a>
-								<ul class="dropdown-menu dropdown-menu-right right-align-profile bg-dark" aria-labelledby="navbarDropdownMenuLink">
-									<li><a class="nav-link" href="https://video.shibanet.repl.co" title="The YouTube replacement"><i class="fa fa-video-camera fa-lg" aria-hidden="true"></i> Video</a></li>
-								</ul>
-							</li>
+								<div class="dropdown-menu bg-dark dropdown-menu-right right-align-profile p-4 text-muted">
+									<h6 class="dropdown-header">Expermiental apps</h6>
+									<a class="nav-link" href="https://video.shibanet.repl.co" title="The YouTube replacement"><i class="fa fa-video-camera fa-lg" aria-hidden="true"></i> Video</a>
+								</div>
+							</div>
 							{% if "username" in session %}
-							<li class="nav-item dropdown">
+							<div class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false"><img class="rounded navbar-img" src="{{ session['username']|pfp }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ session['username'] }}.svg'" alt="User's pfp"><span class="nav-text"> {{ session["username"] }}</span></a>
-								<ul class="dropdown-menu dropdown-menu-right right-align-profile bg-dark" aria-labelledby="navbarDropdownMenuLink">
-									<li><a class="nav-link" href={{ url_for("view_user",username="me") }}><i class="fa fa-user fa-lg" aria-hidden="true"></i> Profile</a></li>
-									<li><a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a></li>
-									<li><a class="nav-link" href={{ url_for("user_settings") }}><i class="fa fa-cog fa-lg" aria-hidden="true"></i> Settings</a></li>
+								<div class="dropdown-menu dropdown-menu-right right-align-profile bg-dark" aria-labelledby="navbarDropdownMenuLink">
+									<a class="nav-link" href={{ url_for("view_user",username="me") }}><i class="fa fa-user fa-lg" aria-hidden="true"></i> Profile</a>
+									<a class="nav-link" href={{ url_for("submit") }}><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Post</a>
+									<a class="nav-link" href={{ url_for("user_settings") }}><i class="fa fa-cog fa-lg" aria-hidden="true"></i> Settings</a>
 									<div class="dropdown-divider"></div>
-									<li><a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')"><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Logout</a></li>
-								</ul>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" data-bs-toggle="offcanvas" href="#notifications" role="button" aria-controls="notifications">
-									<span class="position-relative">
-										<i class="fa fa-bell fa-lg"></i>
-										<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif_badge">{{ notifs|count if notifs|count > 0 else ""}}</span>
-									</span>
-								</a>
-							</li>
+									<a class="nav-link" href="/logout" onclick="return confirm('Are you sure?')"><i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Logout</a>
+								</div>
+							</div>
+							<a class="nav-item nav-link" data-bs-toggle="offcanvas" href="#notifications" role="button" aria-controls="notifications">
+								<span class="position-relative">
+									<i class="fa fa-bell fa-lg"></i>
+									<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif_badge">{{ notifs|count if notifs|count > 0 else ""}}</span>
+								</span>
+							</a>
 							{% else %}
-							<li clas="nav-item">
-								<a class="nav-link" href={{ url_for("login") }}>Login</a>
-							</li>
+							<a class="nav-item nav-link" href={{ url_for("login") }}>Login</a>
 							{% endif %}
-						</ul>
+						</div>
 					</div>
 				</div>
 			</nav>
@@ -96,9 +89,9 @@
 			{% endblock %}
 		</div>
 
-		<div style="color:white;" class="offcanvas offcanvas-end bg-dark" data-bs-scroll="true" tabindex="-1" id="notifications" aria-labelledby="notificationsLabel">
+		<div style="color:white;" class="offcanvas offcanvas-end bg-dark" data-bs-scroll="true" tabindex="-1" id="notifications" aria-labelledby="notifications">
 			<div class="offcanvas-header">
-				<h5 id="notificationsLabel">Notifications</h5>
+				<h5 id="notifications">Notifications</h5>
 				<a href="javascript:void(0);" id="markread" class='btn {% if notifs %}btn-primary {% else %} btn-secondary disabled{% endif %}'>Mark All Read</a>
     			<button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 			</div>
