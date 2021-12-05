@@ -1,13 +1,10 @@
 from flask import render_template, url_for, session, redirect, request, make_response, jsonify
-import os, logging, datetime, flask_pymongo
+import os, datetime, flask_pymongo
 from utils.mongo import mongo, getparent
 from utils.flask import app, getratio
 from utils.authutils import login_required
 from utils import imgur, utils, notifs
 from utils import shortlinks
-
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
 
 # Main
 

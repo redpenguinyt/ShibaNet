@@ -1,11 +1,14 @@
 from flask import Flask, render_template, session, redirect, url_for, request, make_response, jsonify, escape
 from flask_misaka import Misaka
 from flask_pymongo import PyMongo, DESCENDING
-import datetime, os
+import datetime, logging, os
 
 app = Flask('ShibaNet')
 app.config["MONGO_URI"] = os.environ["MONGO_URI"]
 app.secret_key = os.environ["secret_key"]
+
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 md = Misaka(app, autolink=True, underline=True, no_intra_emphasis=True, smartypants=True, tables=True, no_html=True, space_headers=True, superscript=True)
 mongo = PyMongo(app)

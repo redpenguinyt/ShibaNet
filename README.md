@@ -1,1 +1,0 @@
-# [ShibaNet](https://shibanet.repl.co)
