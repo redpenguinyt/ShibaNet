@@ -52,6 +52,8 @@ def logout():
 	session.clear()
 	return redirect(url_for('index'))
 
+# Register
+
 @app.route("/register", methods=["POST","GET"])
 def register():
 	if request.method == "POST":
@@ -77,7 +79,7 @@ def register():
 				e_result = confirmemail(new_tmp_user, confirm_key)
 
 				if e_result == "error":
-					return render_template("auth/register.html", hidenav=True, error="That email could not be used")
+					return render_template("auth/register.html", error="That email could not be used")
 
 				tmp_users = mongo.db.tmp_users
 				tmp_users.delete_many({'email': request.form["email"]})

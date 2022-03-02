@@ -1,6 +1,8 @@
 {% extends "base.html" %}
+
+{% block title %}{% if edit_post %}Edit{% else %}Submit{% endif %} - {% endblock %}
+
 {% block content %}
-<title>{% if edit_post %}Edit{% else %}Submit{% endif %} - ShibaNet</title>
 <h2>{% if edit_post %}Edit "{{ ex_post["title"] }}"{% else %}Submit a post{% endif %}</h2><br>
 
 {% if error %}
@@ -15,7 +17,9 @@
 		<input type="submit" class="btn btn-primary" value="Edit" style="text-align: center;" onClick="OnSubmit(this);" autofocus>
 	</div>
 </form>
+
 {% else %}
+
 <ul class="nav nav-tabs" id="myTab" role="tablist">
 	<li class="nav-item" role="presentation">
 		<button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab" aria-controls="text" aria-selected="true">Text</button>
@@ -23,7 +27,11 @@
   	<li class="nav-item" role="presentation">
     	<button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button" role="tab" aria-controls="image" aria-selected="false">Image</button>
   	</li>
+	<li class="nav-item" role="presentation">
+    	<button class="nav-link" id="link-tab" data-bs-toggle="tab" data-bs-target="#link" type="button" role="tab" aria-controls="link" aria-selected="false">Link</button>
+	</li>
 </ul>
+
 <div class="tab-content" id="myTabContent">
 	<div class="tab-pane fade show active" id="text" role="tabpanel" aria-labelledby="text-tab">
 		<br>
@@ -35,6 +43,7 @@
 			</div>
 		</form>
 	</div>
+	
 	<div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image-tab">
 		<br>
 		<form action="{{ url_for('submit',type='image') }}" method="POST" class="form-signin" enctype="multipart/form-data">
@@ -42,6 +51,19 @@
 				<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*" autofocus>
 				<br>
 				<input type="file" name="image" accept="image/*"/>
+				<br><br>
+				<input type="submit" class="btn btn-primary" value="Post!" style="text-align: center;" onClick="OnSubmit(this);">
+			</div>
+		</form>
+	</div>
+
+	<div class="tab-pane fade" id="link" role="tabpanel" aria-labelledby="link-tab">
+		<br>
+		<form action="{{ url_for('submit',type='link') }}" method="POST" class="form-signin" enctype="multipart/form-data">
+			<div class="form-group">
+				<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*" autofocus>
+				<br>
+				<input type="url" id="link" name="link" placeholder="put your url here!">
 				<br><br>
 				<input type="submit" class="btn btn-primary" value="Post!" style="text-align: center;" onClick="OnSubmit(this);">
 			</div>

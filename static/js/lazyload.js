@@ -42,10 +42,12 @@ function loadItems() {
 	
 	if (typeof user !== 'undefined') {
 		url += `&user=${user}`  
-	};
-	if (typeof search !== 'undefined') {
+	} else if (typeof search !== 'undefined') {
 		url += `&search=${search}`
+	} else if (typeof category !== 'undefined') {
+		url += `&category=${category}`
 	};
+	
 	// Use fetch to request data and pass the counter value in the QS
 	fetch( url ).then((response) => {
 		// Convert the response data to JSON
@@ -71,7 +73,11 @@ function loadItems() {
 			template_clone.querySelector("#author").href = `/u/${post.author}`;
 			template_clone.querySelector("#category").innerHTML = post.category;
 			template_clone.querySelector("#category").href = `/c/${post.category}`;
-			template_clone.querySelector("#body").innerHTML = post.body;
+			if (!post.body.endsWith("link-post</a></p>\n")) {
+				template_clone.querySelector("#body").innerHTML = post.body;
+			} else {
+				template_clone.querySelector("#body").innerHTML = "lol its a link"
+			};
 			template_clone.querySelector("#body").classList.add(`${post.type}_post`);
 
 			if (data.username) {

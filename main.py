@@ -78,6 +78,8 @@ def submit():
 				imgur_url = ""
 
 			content = f"![{request.form['title']}]({imgur_url})"
+		elif request.args["type"] == "link":
+			content = f"[link-post]({request.form['link']})"
 		else:
 			return render_template("post/submit.html", notifs=user_notifs, error="Error creating post of that type, if this message appears then you broke the website")
 		
@@ -89,7 +91,8 @@ def submit():
 			"timestamp": datetime.datetime.now(),
 			"comments": [],
 			"type": request.args["type"],
-			"score": {session["username"]: 1}
+			"score": {session["username"]: 1},
+			"category": ""
 		})
 		mentions = []
 		for word in f"{request.form['title']} {content}".split(" "):
@@ -368,6 +371,13 @@ def dislike(post_id):
 	res = getratio(mongo.db.posts.find_one({"_id": post_id})["score"])
 	return make_response(jsonify(res), 200)
 
+# Categories/Communities
+
+@app.route("/c/<category>")
+def view_category(category):
+	category = mongo.db.categories.find_one({"_name": category})
+	return render_template("category/view.html", category=category)
+
 # User
 
 @app.route("/user/<username>", methods=["POST","GET"])
@@ -478,5 +488,12 @@ def view_notif():
 			return redirect(notif["link"])
 
 	return render_template("notif/view.html",notif=notif, notifs=user_notifs)
+
+# Help
+
+@app.route("/help",methods=["POST","GET"])
+def help():
+	if request.method == "GET":
+		return render_template("help.html")
 
 app.run(host='0.0.0.0', port=8080, debug=True)

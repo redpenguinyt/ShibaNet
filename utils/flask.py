@@ -138,6 +138,15 @@ def load():
 				skip = counter, limit = quantity,
 				sort = [("timestamp", DESCENDING)]
 			)
+		elif request.args["sort"] == "Category" and "category" in request.args:
+			mongo_result = mongo.db.posts.find(
+				{
+					"category": request.args["category"],
+					"timestamp": {"$lte": datetime.datetime.now()}
+				},
+				skip = counter, limit = quantity,
+				sort = [('timestamp', DESCENDING)]
+			)
 		else: # sort by All
 			mongo_result = mongo.db.posts.find(
 				{
