@@ -3,7 +3,6 @@ from functools import wraps
 from .email import confirmemail, iforgor
 from .utils import generate_id
 from .flask import app
-from .mongo import mongo
 import bcrypt, datetime
 
 # Auth

@@ -1,7 +1,7 @@
-from flask import render_template, url_for, session, redirect, request, make_response, jsonify
-import os, datetime, flask_pymongo
-from utils.mongo import mongo, getparent
-from utils.flask import app, getratio
+from flask import url_for, session, redirect, request, make_response, jsonify
+import os, flask_pymongo
+from datetime import datetime
+from utils.flask import app, getratio, render_template, mongo
 from utils.authutils import login_required
 from utils import imgur, utils, notifs
 from utils import shortlinks
@@ -10,15 +10,11 @@ from utils import shortlinks
 
 @app.route("/")
 def index():
-	user_notifs = []
-	if "username" in session:
-		user_notifs = notifs.get_notifs(session["username"])
-
 	if "sort" in request.args:
 		if request.args["sort"] == "All" or not "username" in session:
-			return render_template("home.html", notifs=user_notifs)
+			return render_template("home.html")
 		elif request.args["sort"] == "Following":
-			return render_template("home.html", notifs=user_notifs)
+			return render_template("home.html")
 			
 	return redirect(url_for("index", sort="Following"))
 
@@ -40,18 +36,15 @@ def search():
 @app.route("/submit", methods=["POST", "GET"])
 @login_required
 def submit():
-	user_notifs = notifs.get_notifs(session["username"])
-
 	mins_since_post = utils.isCoolDown(session["username"], mongo.db.posts)
 	if mins_since_post > 0:
 		return render_template(
 			"post/submit.html",
-			error=f"You can only make a post every 5 minutes, please wait {5 - mins_since_post} minutes first",
-			notifs=user_notifs
+			error=f"You can only make a post every 5 minutes, please wait {5 - mins_since_post} minutes first"
 		), 403
 
 	if request.method == "GET":
-		return render_template("post/submit.html", notifs=user_notifs)
+		return render_template("post/submit.html")
 	
 	if "type" in request.args:
 		posts = mongo.db.posts
@@ -59,7 +52,7 @@ def submit():
 
 		if request.args["type"] == "text":
 			if request.form["title"] == "" or request.form["body"] == "":
-				return render_template("post/submit.html", error="All fields must be filled", notifs=user_notifs)
+				return render_template("post/submit.html", error="All fields must be filled")
 			
 			content = request.form["body"]
 		elif request.args["type"] == "image":
@@ -81,14 +74,14 @@ def submit():
 		elif request.args["type"] == "link":
 			content = f"[link-post]({request.form['link']})"
 		else:
-			return render_template("post/submit.html", notifs=user_notifs, error="Error creating post of that type, if this message appears then you broke the website")
+			return render_template("post/submit.html", error="Error creating post of that type, if this message appears then you broke the website")
 		
 		posts.insert_one({
 			"_id": post_id,
 			"title": request.form["title"],
 			"body": content,
 			"author": session["username"],
-			"timestamp": datetime.datetime.now(),
+			"timestamp": datetime.now(),
 			"comments": [],
 			"type": request.args["type"],
 			"score": {session["username"]: 1},
@@ -110,39 +103,34 @@ def submit():
 @app.route("/post/<post_id>", methods=["GET"])
 def view_post(post_id):
 	post = mongo.db.posts.find_one({"_id": post_id.lower()})
-
-	user_notifs = []
-	if "username" in session:
-		user_notifs = notifs.get_notifs(session["username"])
 	
 	if not post:
-		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
+		return render_template("message.html",title="404",body="Coudn't find what you were looking for!"), 404
 
 	comments = utils.getcomments(post["comments"])
 
-	return render_template("post/view.html", post=post, comments=comments, notifs=user_notifs)
+	return render_template("post/view.html", post=post, comments=comments)
 
 @app.route("/post/<post_id>/edit", methods=["POST","GET"])
 @login_required
 def edit_post(post_id):
-	user_notifs = notifs.get_notifs(session["username"])
 
 	post = mongo.db.posts.find_one({"_id": post_id})
 
 	if not post:
-		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
+		return render_template("message.html",title="404",body="Coudn't find what you were looking for!"), 404
 
 	if post["author"] != session["username"]:
-		return render_template("message.html",title="Cannot edit",body="You don't have permissions to edit that!", notifs=user_notifs), 403
+		return render_template("message.html",title="Cannot edit",body="You don't have permissions to edit that!"), 403
 
 	if post["type"] == "image":
-		return render_template("message.html", title="Cannot edit",body="You cannot edit images :/", notifs=user_notifs), 403
+		return render_template("message.html", title="Cannot edit",body="You cannot edit images :/"), 403
 
 	if request.method == "GET":
-		return render_template("post/submit.html", ex_post=post, notifs=user_notifs)
+		return render_template("post/submit.html", ex_post=post)
 	
 	if request.form["title"] == "" or request.form["body"] == "":
-		return render_template("post/submit.html", error="All fields must be filled", ex_post=post, notifs=user_notifs)
+		return render_template("post/submit.html", error="All fields must be filled", ex_post=post)
 
 	mongo.db.posts.find_one_and_update(
 		{'_id': post_id},
@@ -158,32 +146,29 @@ def edit_post(post_id):
 @app.route("/post/<post_id>/delete")
 @login_required
 def delete_post(post_id):
-	user_notifs = notifs.get_notifs(session["username"])
 	
 	post = mongo.db.posts.find_one({"_id": post_id})
 
 	if not post:
-		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
+		return render_template("message.html",title="404",body="Coudn't find what you were looking for!"), 404
 
 	if post["author"] == session["username"]:
 		mongo.db.posts.delete_one({"_id": post_id})
 	else:
-		return render_template("message.html",title="Cannot delete",body="You can't delete that!", notifs=user_notifs), 403
+		return render_template("message.html",title="Cannot delete",body="You can't delete that!"), 403
 	
 	return redirect(url_for("view_user",username=post["author"]))
 
 @app.route("/post/<post_id>/comment", methods=["POST","GET"])
 @login_required
 def comment(post_id):
-	user_notifs = notifs.get_notifs(session["username"])
-
 	post = mongo.db.posts.find_one({"_id": post_id})
 
 	if not post:
-		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
+		return render_template("message.html",title="404",body="Coudn't find what you were looking for!"), 404
 
 	if request.method == "GET":
-		return render_template("post/cmt_submit.html", prnt=post, notifs=user_notifs)
+		return render_template("post/cmt_submit.html", prnt=post)
 	
 	if request.form["body"] == "":
 		return render_template("post/cmt_submit.html",
@@ -204,7 +189,7 @@ def comment(post_id):
 			"type": "post",
 			"id": post_id
 		},
-		"timestamp": datetime.datetime.now()
+		"timestamp": datetime.now()
 	})
 	mongo.db.posts.find_one_and_update(
 		{ "_id": post_id }, 
@@ -231,18 +216,16 @@ def comment(post_id):
 @app.route("/post/<post_id>/comment/<parent_cmt_id>", methods=["POST","GET"])
 @login_required
 def subcomment(post_id, parent_cmt_id):
-	user_notifs = notifs.get_notifs(session["username"])
-
 	parent = mongo.db.comments.find_one({"_id": parent_cmt_id})
 
 	if not parent or parent["author"] == "<deleted>":
-		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
+		return render_template("message.html",title="404",body="Coudn't find what you were looking for!"), 404
 
 	if request.method == "GET":
-		return render_template("post/cmt_submit.html", prnt=parent, pst_id=post_id, notifs=user_notifs)
+		return render_template("post/cmt_submit.html", prnt=parent, pst_id=post_id)
 	
 	if request.form["body"] == "":
-		return render_template("post/cmt_submit.html", error="All fields must be filled", prnt=parent, notifs=user_notifs)
+		return render_template("post/cmt_submit.html", error="All fields must be filled", prnt=parent)
 	
 	comments = mongo.db.comments
 	cmt_id = utils.generate_id(3, comments)
@@ -256,7 +239,7 @@ def subcomment(post_id, parent_cmt_id):
 			"type": "comment",
 			"id": parent_cmt_id
 		},
-		"timestamp": datetime.datetime.now()
+		"timestamp": datetime.now()
 	})
 	mongo.db.comments.find_one_and_update(
 		{"_id": parent_cmt_id}, 
@@ -283,21 +266,19 @@ def subcomment(post_id, parent_cmt_id):
 @app.route("/comment/<cmt_id>/edit", methods=["POST","GET"])
 @login_required
 def edit_comment(cmt_id):
-	user_notifs = notifs.get_notifs(session["username"])
-
 	comment = mongo.db.comments.find_one({"_id": cmt_id})
 
 	if not comment:
-		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
+		return render_template("message.html",title="404",body="Coudn't find what you were looking for!"), 404
 
 	if comment["author"] != session["username"]:
-		return render_template("message.html",title="Cannot edit",body="You don't have permissions to edit that!", notifs=user_notifs), 403
+		return render_template("message.html",title="Cannot edit",body="You don't have permissions to edit that!"), 403
 	
 	if request.method == "GET":
-		return render_template("post/cmt_submit.html", ex_cmt=comment, notifs=user_notifs)
+		return render_template("post/cmt_submit.html", ex_cmt=comment)
 	
 	if request.form["body"] == "":
-		return render_template("post/cmt_submit.html", error="All fields must be filled", ex_cmt=comment, notifs=user_notifs)
+		return render_template("post/cmt_submit.html", error="All fields must be filled", ex_cmt=comment)
 
 	mongo.db.comments.find_one_and_update(
 		{'_id': cmt_id},
@@ -307,17 +288,15 @@ def edit_comment(cmt_id):
 		}
 	)
 
-	return redirect(url_for("view_post", post_id=getparent(cmt_id)["_id"]))
+	return redirect(url_for("view_post", post_id=utils.getparent(cmt_id)["_id"]))
 
 @app.route("/comment/<cmt_id>/delete")
 @login_required
 def delete_comment(cmt_id):
-	user_notifs = notifs.get_notifs(session["username"])
-	
 	comment = mongo.db.comments.find_one({"_id": cmt_id})
 
 	if not comment:
-		return render_template("message.html",title="404",body="Coudn't find what you were looking for!", notifs=user_notifs), 404
+		return render_template("message.html",title="404",body="Coudn't find what you were looking for!"), 404
 
 	if comment["author"] == session["username"]:
 		mongo.db.comments.find_one_and_update(
@@ -329,9 +308,9 @@ def delete_comment(cmt_id):
 			}
 		)
 	else:
-		return render_template("message.html",title="Cannot delete",body="You can't delete that!", notifs=user_notifs), 403
+		return render_template("message.html",title="Cannot delete",body="You can't delete that!"), 403
 	
-	return redirect(url_for("view_post",post_id=getparent(cmt_id)["_id"]))
+	return redirect(url_for("view_post",post_id=utils.getparent(cmt_id)["_id"]))
 
 @app.route('/<post_id>/like')
 @login_required
@@ -382,17 +361,14 @@ def view_category(category):
 
 @app.route("/user/<username>", methods=["POST","GET"])
 def view_user(username):
-	user_notifs = []
 	if "username" in session:
-		user_notifs = notifs.get_notifs(session["username"])
-
 		if username == "me":
 			return redirect(url_for("view_user", username=session["username"]))
 
 	users = mongo.db.users
 	user = users.find_one({"name": username}, projection={"password": False,"_id": False, "email": False})
 	if not user:
-		return render_template("message.html",title="404",body="That user doesn't exist", notifs=user_notifs), 404
+		return render_template("message.html",title="404",body="That user doesn't exist"), 404
 
 	following = False
 	friends = False
@@ -402,21 +378,25 @@ def view_user(username):
 
 		friends = following and session["username"] in users.find_one({"name": username})["following"]
 	
-	if "follow" in request.args and session["username"] != username:
-		if following:
-			mongo.db.users.find_one_and_update(
-				{ "name": session["username"] }, 
-				{"$pull": {"following": username}}
-			)
+	if "follow" in request.args: 
+		if "username" in session:
+			if session["username"] != username:
+				if following:
+					mongo.db.users.find_one_and_update(
+						{ "name": session["username"] }, 
+						{"$pull": {"following": username}}
+					)
+				else:
+					notifs.call(username, f"{session['username']} started following you!", f"If you haven't already, [follow them back!]({url_for('view_user',username=session['username'])})")
+					
+					mongo.db.users.find_one_and_update(
+						{ "name": session["username"] }, 
+						{"$push": {"following": username}}
+					)
+				
+				return redirect(url_for("view_user", username=username))
 		else:
-			notifs.call(username, f"{session['username']} started following you!", f"If you haven't already, [follow them back!]({url_for('view_user',username=session['username'])})")
-			
-			mongo.db.users.find_one_and_update(
-				{ "name": session["username"] }, 
-				{"$push": {"following": username}}
-			)
-		
-		return redirect(url_for("view_user", username=username))
+			return redirect(url_for("login", back="view_user"))
 
 	user_comments = mongo.db.comments.find({"author":user["name"]}).sort('timestamp', flask_pymongo.DESCENDING)
 
@@ -432,12 +412,10 @@ def view_user(username):
 @app.route("/settings", methods=["POST","GET"])
 @login_required
 def user_settings():
-	user_notifs = notifs.get_notifs(session["username"])
-	
 	user = mongo.db.users.find_one({"name": session["username"]})
 
 	if request.method == "GET":
-		return render_template("user/settings.html", user=user, notifs=user_notifs)
+		return render_template("user/settings.html", user=user)
 	
 	# Pfp save
 
@@ -481,19 +459,28 @@ def view_notif():
 
 	notif = notifs.mark_read(session["username"], request.args["notif"])
 
-	user_notifs = notifs.get_notifs(session["username"])
-
 	if "link" in notif:
 		if notif["link"]:
 			return redirect(notif["link"])
 
-	return render_template("notif/view.html",notif=notif, notifs=user_notifs)
+	return render_template("notif/view.html",notif=notif)
 
 # Help
 
 @app.route("/help",methods=["POST","GET"])
+@login_required
 def help():
 	if request.method == "GET":
 		return render_template("help.html")
+
+	mongo.db.feedback.insert_one({
+		"title": request.form["title"],
+		"body": request.form["body"],
+		"author": session["username"],
+		"timestamp": datetime.now(),
+		"approved": False
+	})
+
+	return render_template("message.html", title="Message recieved")
 
 app.run(host='0.0.0.0', port=8080, debug=True)

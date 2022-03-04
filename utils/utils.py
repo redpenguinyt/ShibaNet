@@ -1,5 +1,5 @@
-import flask_pymongo, datetime, secrets
-from .mongo import mongo
+import datetime, secrets
+from .flask import mongo
 
 def generate_id(length, collection=None):
 	new_id = secrets.token_hex(length)
@@ -10,7 +10,7 @@ def generate_id(length, collection=None):
 
 def isCoolDown(username, posts):
 	if posts.count_documents({"author": username}) >= 1:
-		last_post = posts.find({"author": username}).sort('timestamp', flask_pymongo.DESCENDING)[0]
+		last_post = posts.find({"author": username}).sort('timestamp', -1)[0]
 		time_since_last_post = datetime.datetime.now() - last_post["timestamp"]
 		mins_since_post = (time_since_last_post.seconds//60)%60
 
@@ -44,3 +44,18 @@ def like(post, username, likeType=1):
 		mongo.db.posts.find_one_and_update({"_id": post["_id"]},{"score":{"$unset":{username: likeType}}})
 	else:
 		mongo.db.posts.find_one_and_update({"_id": post["_id"]},{"score":{"$set":{username: likeType}}})
+
+def getparent(cmt_id):
+	comments = mongo.db.comments
+
+	parent = {}
+
+	while True:
+		parent = comments.find_one({"_id":cmt_id})
+		parent_type = parent["parent"]["type"]
+		if parent_type == "post":
+			break
+		cmt_id = parent["parent"]["id"]
+	
+	post = mongo.db.posts.find_one({"_id": parent["parent"]["id"]})
+	return post

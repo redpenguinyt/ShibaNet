@@ -3,6 +3,14 @@
 {% block title %}Help - {% endblock %}
 
 {% block content %}
-<h3>ono plz help</h3>
+<h3>Submit feedback</h3>
+
+<form action="{{ url_for('help') }}" method="POST" class="form-signin">
+	<div class="form-group">
+		<input style="width:50%" type="title" class="form-control" name="title" placeholder="Title*" autofocus><br>
+		<textarea style="width: 75%" class="form-control" id="body" name="body" rows="7" placeholder="Body*" maxlength="1000"></textarea><br>
+		<input type="submit" class="btn btn-primary" value="Send!" style="text-align: center;" onClick="OnSubmit(this);">
+	</div>
+</form>
 
 {% endblock %}

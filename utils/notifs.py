@@ -1,4 +1,4 @@
-from .authutils import mongo
+from .flask import mongo
 from .utils import generate_id
 import datetime
 

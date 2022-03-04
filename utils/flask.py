@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, redirect, url_for, request, make_response, jsonify, escape
+from flask import Flask, render_template as old_render, session, redirect, url_for, request, make_response, jsonify, escape
 from flask_misaka import Misaka
 from flask_pymongo import PyMongo, DESCENDING
 import datetime, logging, os
@@ -15,6 +15,14 @@ mongo = PyMongo(app)
 
 def truncate(data, amount):
 	return (data[:amount] + '...') if len(data) > amount else data
+
+def render_template(template, **params):
+	"""Custom render_template, don't pass a parameter with the key `notifs`"""
+	user_notifs = []
+	if "username" in session:
+		user_notifs = sorted(list(filter(lambda d: d['read'] in [False], mongo.db.notifications.find_one({"user": session["username"]})["notifs"])), key=lambda d: d['timestamp'], reverse=True)
+	
+	return old_render(template, notifs=user_notifs, **params)
 
 @app.errorhandler(404)
 def page_not_found(e):
