@@ -173,8 +173,7 @@ def comment(post_id):
 	if request.form["body"] == "":
 		return render_template("post/cmt_submit.html",
 			error="All fields must be filled",
-			prnt=post,
-			notifs=user_notifs
+			prnt=post
 		)
 	
 	comments = mongo.db.comments
@@ -405,8 +404,7 @@ def view_user(username):
 		user = user,
 		user_comments = user_comments,
 		following = following,
-		friends = friends,
-		notifs = user_notifs
+		friends = friends
 	)
 
 @app.route("/settings", methods=["POST","GET"])
@@ -480,6 +478,7 @@ def help():
 		"timestamp": datetime.now(),
 		"approved": False
 	})
+	notifs.call("RedPenguin", f"{session['username']} needs help!", request.form["body"])
 
 	return render_template("message.html", title="Message recieved")
 
