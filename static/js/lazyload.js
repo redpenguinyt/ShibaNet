@@ -68,7 +68,7 @@ function loadItems() {
 
 			// Query & update the template content
 			template_clone.querySelector("#title").innerHTML = post.title;
-			template_clone.querySelector("#title").href = `/${post._id}`;
+			template_clone.querySelector("#title").href = `/post/${post._id}`;
 			template_clone.querySelector("#author").innerHTML = post.author;
 			template_clone.querySelector("#author").href = `/u/${post.author}`;
 			template_clone.querySelector("#category").innerHTML = post.category;

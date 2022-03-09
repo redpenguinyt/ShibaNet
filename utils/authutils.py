@@ -2,7 +2,7 @@ from flask import request, render_template, redirect, url_for, session
 from functools import wraps
 from .email import confirmemail, iforgor
 from .utils import generate_id
-from .flask import app
+from .flask import app, mongo
 import bcrypt, datetime
 
 # Auth
