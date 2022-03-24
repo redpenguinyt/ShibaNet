@@ -71,8 +71,10 @@ function loadItems() {
 			template_clone.querySelector("#title").href = `/post/${post._id}`;
 			template_clone.querySelector("#author").innerHTML = post.author;
 			template_clone.querySelector("#author").href = `/u/${post.author}`;
-			template_clone.querySelector("#category").innerHTML = post.category;
-			template_clone.querySelector("#category").href = `/c/${post.category}`;
+			if (post.category) {
+				template_clone.querySelector("#category").innerHTML = `in ${post.category}`;
+				template_clone.querySelector("#category").href = `/c/${post.category}`;
+			};
 			if (!post.body.endsWith("link-post</a></p>\n")) {
 				template_clone.querySelector("#body").innerHTML = post.body;
 			} else {
