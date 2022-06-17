@@ -21,7 +21,7 @@
 			</div>
 		</form>
 		{% else %}
-		<form action="{{ url_for('confirm_forgot',email=email, key=key) }}" method="POST" class="form-signin">
+		<form action="{{ url_for('confirm_forgot', key=user['key']) }}" method="POST" class="form-signin">
 			<div class="form-group">
 				<input type="password" class="form-control" name="password" id="password" placeholder="New password" pattern=".{4,}" required title="Password must be at least 4 characters"><br>
 

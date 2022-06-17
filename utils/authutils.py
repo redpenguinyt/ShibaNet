@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, url_for, session
 from functools import wraps
-from .email import confirmemail, iforgor
+from .email import confirm_email, iforgor_email
 from .utils import generate_id
 from .flask import app, mongo
 import bcrypt, datetime
@@ -76,7 +76,7 @@ def register():
 				}
 
 				# Confirm email
-				e_result = confirmemail(new_tmp_user, confirm_key)
+				e_result = confirm_email(new_tmp_user)
 
 				if e_result == "error":
 					return render_template("auth/register.html", error="That email could not be used")
@@ -98,12 +98,17 @@ def register():
 @app.route("/resend/<email>/")
 def resend_email(email):
 	user = mongo.db.tmp_users.find_one({"email": email})
-	e_result = confirmemail(user, user["key"])
+	e_result = confirm_email(user)
 
 	if e_result == "error":
 		return render_template("auth/register.html", hidenav=True, error="That email could not be used")
 	
-	return render_template("message.html",title="Resent email address", body=f"Check your email ({user['email']})", btnurl=url_for("resend_email",email=user['email']), btntag="Resend email")
+	return render_template("message.html",
+		title="Resent email address",
+		body=f"Check your email ({user['email']})",
+		btnurl=url_for("resend_email",email=user['email']),
+		btntag="Resend email"
+	)
 
 @app.route("/confirm/new/")
 def confirm():
@@ -131,8 +136,8 @@ def confirm():
 					"_id": "0001",
 					"title": "Welcome to ShibaNet!",
 					"body": "We hope you enjoy using the app :)",
-					"timestamp":datetime.datetime.now(),
-					"read":False
+					"timestamp": datetime.datetime.now(),
+					"read": False
 				}
 			]
 		})
@@ -163,7 +168,7 @@ def forgot_password():
 		"type": "forgot"
 	}
 
-	iforgor(request.form["email"], confirm_key)
+	iforgor_email(new_tmp_user)
 
 	tmp_users = mongo.db.tmp_users
 	tmp_users.delete_many({'email': request.form["email"]})
@@ -171,31 +176,27 @@ def forgot_password():
 
 	return render_template("message.html",title="Confirm email address", body=f"Check your email ({request.form['email']})")
 
-@app.route("/confirm/forgot/", methods=["POST","GET"])
-def confirm_forgot():
-	if "email" in request.args and "key" in request.args:
-		email = request.args["email"]
-		key = request.args["key"]
-		tmp_users = mongo.db.tmp_users
-		tmp_user = tmp_users.find_one({"email": email,"type":"forgot"})
-
-		if request.method == "GET":
-			if tmp_user:
-				if tmp_user["key"] == key:
-					return render_template("auth/forgot.html",user=tmp_user,email=email,key=key)
-
+@app.route("/confirm/forgot/<key>", methods=["POST","GET"])
+def confirm_forgot(key):
+	tmp_users = mongo.db.tmp_users
+	tmp_user = tmp_users.find_one({"key": key, "type":"forgot"})
+	
+	if request.method == "GET":
 		if tmp_user:
-			if tmp_user["key"] == key:
-				password = bcrypt.hashpw(request.form["password"].encode("utf-8"), bcrypt.gensalt())
-				
-				mongo.db.users.find_one_and_update(
-					{"email": tmp_user["email"]},
-					{"$set": {
-						"password": password
-					}}
+				return render_template("auth/forgot.html",
+					user=tmp_user
 				)
-				tmp_users.delete_many({'email': email})
-				return redirect(url_for("login"))
+	elif tmp_user:
+		password = bcrypt.hashpw(request.form["password"].encode("utf-8"), bcrypt.gensalt())
+			
+		mongo.db.users.find_one_and_update(
+			{"email": tmp_user["email"]},
+			{"$set": {
+				"password": password
+			}}
+		)
+		tmp_users.delete_many({'email': tmp_user["email"]})
+		return redirect(url_for("login"))
 	
 	return render_template("message.html", title="Couldn't change password", body="Try again")
 

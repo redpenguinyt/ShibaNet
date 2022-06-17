@@ -1,6 +1,8 @@
-import yagmail, os
+from flaskext.mail import Mail, Message
+from .flask import app, url_for
 
-yag = yagmail.SMTP(os.environ["email"], os.environ["email_key"])
+mail = Mail(app)
+
 contents = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
@@ -11,52 +13,20 @@ contents = """
 
 
 <style type="text/css">
-img {
-max-width: 100%;
-}
-body {
--webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em;
-}
-body {
-background-color: #f6f6f6;
-}
+img { max-width: 100%; } body { -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em; } body { background-color: #f6f6f6; }
 @media only screen and (max-width: 640px) {
-  body {
-    padding: 0 !important;
-  }
-  h1 {
-    font-weight: 800 !important; margin: 20px 0 5px !important;
-  }
-  h2 {
-    font-weight: 800 !important; margin: 20px 0 5px !important;
-  }
-  h3 {
-    font-weight: 800 !important; margin: 20px 0 5px !important;
-  }
-  h4 {
-    font-weight: 800 !important; margin: 20px 0 5px !important;
-  }
-  h1 {
-    font-size: 22px !important;
-  }
-  h2 {
-    font-size: 18px !important;
-  }
-  h3 {
-    font-size: 16px !important;
-  }
-  .container {
-    padding: 0 !important; width: 100% !important;
-  }
-  .content {
-    padding: 0 !important;
-  }
-  .content-wrap {
-    padding: 10px !important;
-  }
-  .invoice {
-    width: 100% !important;
-  }
+  body { padding: 0 !important; }
+  h1 { font-weight: 800 !important; margin: 20px 0 5px !important; }
+  h2 { font-weight: 800 !important; margin: 20px 0 5px !important; }
+  h3 { font-weight: 800 !important; margin: 20px 0 5px !important; }
+  h4 { font-weight: 800 !important; margin: 20px 0 5px !important; }
+  h1 { font-size: 22px !important; }
+  h2 { font-size: 18px !important; }
+  h3 { font-size: 16px !important; }
+  .container { padding: 0 !important; width: 100% !important; }
+  .content { padding: 0 !important; }
+  .content-wrap { padding: 10px !important; }
+  .invoice { width: 100% !important; }
 }
 </style>
 </head>
@@ -89,18 +59,27 @@ background-color: #f6f6f6;
 </html>
 """
 
-def confirmemail(user, key):
+def send_email(email, alert, link):
 	try:
-		link = f"https://shibanet.repl.co/confirm/new?email={user['email']}&key={key}"
-
-		yag.send(user["email"], "Confirm email - ShibaNet", contents.format("Confirm your email",link))
+		msg = Message(
+			f"{alert} - ShibaNet",
+			recipients=[email]
+		)
+		msg.html = contents.format(alert, link)
+		mail.send(msg)
 	except Exception as e:
 		print(e)
 
-def iforgor(email, key):
-	try:
-		link = f"https://shibanet.repl.co/confirm/forgot?key={key}"
+def confirm_email(user):
+	send_email(
+		user["email"],
+		"Confirm your email",
+		url_for("confirm", key=user["key"])
+	)
 
-		yag.send(email, "Forgot password - ShibaNet", contents.format("rember your password",link))
-	except:
-		return "email error"
+def iforgor_email(user):
+	send_email(
+		user["email"],
+		"Set a new password",
+		url_for("confirm_forgot", key=user["key"])
+	)
