@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm account - {% endblock %}
+
+{% block content %}
+<div class="centercontainer">
+	<div class="center">
+		<h1 style="text-align: center;">Click the link below to go to your account</h1>
+		<h2 style="text-align: center;">Our email provider does not fully work at the moment, so you may pass</h2>
+		<h3 style="text-align: center;"><a class="btn btn-primary" href="{{url_for('confirm', key=key)}}">Confirm account</a></h3>
+	</div>
+</div>
+{% endblock %}

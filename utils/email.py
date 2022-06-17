@@ -99,7 +99,7 @@ def confirmemail(user, key):
 
 def iforgor(email, key):
 	try:
-		link = f"https://shibanet.repl.co/confirm/forgot?email={email}&key={key}"
+		link = f"https://shibanet.repl.co/confirm/forgot?key={key}"
 
 		yag.send(email, "Forgot password - ShibaNet", contents.format("rember your password",link))
 	except:

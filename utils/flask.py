@@ -1,4 +1,4 @@
-from flask import Flask, render_template as old_render, session, redirect, url_for, request, make_response, jsonify, escape
+from flask import Flask, render_template as _render_template, session, redirect, url_for, request, make_response, jsonify, escape
 from flask_misaka import Misaka
 from flask_pymongo import PyMongo, DESCENDING
 import datetime, logging, os
@@ -22,7 +22,7 @@ def render_template(template, **params):
 	if "username" in session:
 		user_notifs = sorted(list(filter(lambda d: d['read'] in [False], mongo.db.notifications.find_one({"user": session["username"]})["notifs"])), key=lambda d: d['timestamp'], reverse=True)
 	
-	return old_render(template, notifs=user_notifs, **params)
+	return _render_template(template, notifs=user_notifs, **params)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -87,7 +87,11 @@ def getparenttitle(comment):
 
 @app.template_filter()
 def pfp(username):
-	return mongo.db.users.find_one({"name": username})["pfp"]
+	user = mongo.db.users.find_one({"name": username})
+	if user["pfp"]:
+		return user["pfp"]
+	else:
+		return f"https://avatars.dicebear.com/api/jdenticon/{user['name']}.svg"
 
 @app.route("/test")
 def test():

@@ -34,7 +34,7 @@
 		<hr>
 		<h3>
 			<a href='{{ url_for("view_user", username=user["name"]) }}'>
-				<img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ user['name'] }}.svg'" alt="User's pfp" class="rounded" width="30px" height="30px">{{ user["name"] }}
+				<img src="{{ user['name']|pfp }}" alt="" class="rounded" width="30px" height="30px">{{ user["name"] }}
 			</a>
 		</h3>
 		<p>{{ user["bio"]|e|truncate(75)|markdown }}</p>
@@ -46,7 +46,7 @@
 		<hr>
 		<h3>
 			<a href='{{ url_for("view_category", category=category["_name"]) }}'>
-				<img src="{{ category['icon'] }}" onerror="this.onerror=null; this.src='http://www.rw-designer.com/icon-view/2048.png'" alt="Category icon" class="rounded" width="30px" height="30px">{{ category["_name"] }}
+				<img src="{{ category['icon'] }}" onerror="this.onerror=null; this.src='http://www.rw-designer.com/icon-view/2048.png'" alt="" class="rounded" width="30px" height="30px">{{ category["_name"] }}
 			</a>
 		</h3>
 		<p>{{ category["description"]|e|truncate(75)|markdown }}</p>

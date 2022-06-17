@@ -61,9 +61,10 @@ def register():
 		existing_email = users.find_one({"email": request.form["email"]})
 		if not existing_user:
 			if not existing_email:
+				tmp_users = mongo.db.tmp_users
 				hashpass = bcrypt.hashpw(request.form["password"].encode("utf-8"), bcrypt.gensalt())
 
-				confirm_key = generate_id(10)
+				confirm_key = generate_id(10, tmp_users, "key")
 
 				new_tmp_user = {
 					"name": request.form["username"],
@@ -80,10 +81,12 @@ def register():
 				if e_result == "error":
 					return render_template("auth/register.html", error="That email could not be used")
 
-				tmp_users = mongo.db.tmp_users
 				tmp_users.delete_many({'email': request.form["email"]})
 				tmp_users.insert_one(new_tmp_user)
 
+				# Email not working, temporary fix
+				return render_template("tmp_confirm.html", key=confirm_key)
+				
 				return render_template("message.html",title="Confirm email address", body=f"Check your email ({request.form['email']})", btnurl=url_for("resend_email",email=request.form['email']), btntag="Resend email")
 			else:
 				return render_template("auth/register.html", hidenav=True, error="Email is already in use")
@@ -104,41 +107,39 @@ def resend_email(email):
 
 @app.route("/confirm/new/")
 def confirm():
-	if not "email" in request.args or not "key" in request.args:
+	if not "key" in request.args:
 		return render_template("message.html", title="Couldn't confirm email", body="Try again")
-	email = request.args["email"]
 	key = request.args["key"]
 	tmp_users = mongo.db.tmp_users
-	tmp_user = tmp_users.find_one({"email": email,"type":"new"})
+	tmp_user = tmp_users.find_one({"key": key,"type":"new"})
 	if tmp_user:
-		if tmp_user["key"] == key:
-			mongo.db.users.insert_one(
+		mongo.db.users.insert_one(
+			{
+				"name": tmp_user["name"],
+				"email": tmp_user["email"],
+				"password": tmp_user["password"],
+				"following": ["ShibaNet_Official"],
+				"bio": "",
+				"pfp": "",
+				"theme":"amethyst"
+			}
+		)
+		mongo.db.notifications.insert_one({
+			"user": tmp_user["name"],
+			"notifs": [
 				{
-					"name": tmp_user["name"],
-					"email": tmp_user["email"],
-					"password": tmp_user["password"],
-					"following": ["ShibaNet_Official"],
-					"bio": "",
-					"pfp": f"https://avatars.dicebear.com/api/jdenticon/{tmp_user['name']}.svg",
-					"theme":"amethyst"
+					"_id": "0001",
+					"title": "Welcome to ShibaNet!",
+					"body": "We hope you enjoy using the app :)",
+					"timestamp":datetime.datetime.now(),
+					"read":False
 				}
-			)
-			mongo.db.notifications.insert_one({
-				"user":tmp_user["name"],
-				"notifs":[
-					{
-						"_id": "0001",
-						"title": "Welcome to ShibaNet!",
-						"body": "We hope you enjoy using the app :)",
-						"timestamp":datetime.datetime.now(),
-						"read":False
-					}
-				]
-			})
-			tmp_users.delete_many({'email': email})
-			session["username"] = tmp_user["name"]
-			session["theme"] = "amethyst"
-			return redirect(url_for("index"))
+			]
+		})
+		tmp_users.delete_many({'email': tmp_user["email"]})
+		session["username"] = tmp_user["name"]
+		session["theme"] = "amethyst"
+		return redirect(url_for("index"))
 	
 	return render_template("message.html", title="Couldn't confirm email", body="Try again")
 

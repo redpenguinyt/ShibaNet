@@ -10,7 +10,7 @@
 <h2>{{ post["title"]|e|mentions|markdown }}</h2>
 <p style="font-size: 30px;">
 	Posted by <a href='{{ url_for("view_user", username=post["author"]) }}'>
-		<img src="{{ post['author']|pfp }}" onerror="this.onerror=null; this.src='https://avatars.dicebear.com/api/jdenticon/{{ post['author'] }}.svg'" alt="User's pfp" class="rounded" width="30px" height="30px">{{ post["author"] }}
+		<img src="{{ post['author']|pfp }}" alt="User's pfp" class="rounded" width="30px" height="30px">{{ post["author"] }}
 	</a>
 </p>
 

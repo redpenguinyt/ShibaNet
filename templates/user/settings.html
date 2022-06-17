@@ -13,7 +13,7 @@
 
 		<!-- Profile picture -->
 		<label>Profile picture: </label>
-		<img src="{{ user['pfp'] }}" onerror="this.onerror=null; this.src='https://i.imgur.com/WxNkK7J.png'" alt="" class="rounded" width="30px" height="30px">
+		<img src="{{ user['name']|pfp }}" alt="" class="rounded" width="30px" height="30px">
 		<input type="file" name="pfp" accept="image/*"/>
 		<br><br>
 

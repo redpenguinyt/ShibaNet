@@ -1,11 +1,11 @@
 import datetime, secrets
 from .flask import mongo
 
-def generate_id(length, collection=None):
+def generate_id(length, collection=None, col_key="_id"):
 	new_id = secrets.token_hex(length)
 	if collection:
-		if collection.find_one({"_id":new_id}):
-			new_id = generate_id(collection)
+		if collection.find_one({col_key: new_id}):
+			new_id = generate_id(length, collection, col_key)
 	return new_id
 
 def isCoolDown(username, posts):
